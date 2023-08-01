@@ -20,7 +20,6 @@ public class RobotController : MonoBehaviour
         {
              mTray = other.gameObject;
              mTray_rb = mTray.GetComponent<Rigidbody>();
-             
         }
     }
     private void FollowRobot()

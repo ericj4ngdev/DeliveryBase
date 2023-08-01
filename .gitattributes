@@ -1,2 +1,4 @@
 DeliveryBase/Assets/Resources/FrameAssy.fbx filter=lfs diff=lfs merge=lfs -text
 DeliveryBase/Library/Artifacts/e9/e90953e463bd3e23140c3a296e085c7a filter=lfs diff=lfs merge=lfs -text
+DeliveryBase/Assets/Resources/F_Main_assy.fbx filter=lfs diff=lfs merge=lfs -text
+DeliveryBase/Library/Artifacts/9a/9a6b791ca671a10636aa4fe34362b0bb filter=lfs diff=lfs merge=lfs -text
