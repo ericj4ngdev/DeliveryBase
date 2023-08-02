@@ -7,79 +7,125 @@ using UnityEngine.Serialization;
 public class RobotController : MonoBehaviour
 {
     [SerializeField] private GameObject mTray;
-    private Rigidbody mTray_rb;
+    public GameObject body;
+    public GameObject lPork;
+    public GameObject rPork;
 
+    public List<Transform> rackPoint = new List<Transform>();
+    public List<Transform> heightPoint = new List<Transform>();
     public float timer;
     public float LoadingTime;
-    public Vector3 offset;
-    public Vector3 previousPos;
-    
-    private void OnTriggerEnter(Collider other)
+    public int currentRackIdx;
+    public int currentHeightIdx;
+
+    private void Start()
     {
-        if (other.CompareTag("Tray"))
-        {
-             mTray = other.gameObject;
-             mTray_rb = mTray.GetComponent<Rigidbody>();
-        }
-    }
-    private void FollowRobot()
-    {
-        // 로봇의 위치를 기준으로 택배를 따라다니게 합니다.
-        // 나중에 저 offset대신에 tray의 조작값을 넣으면 되지 않을까 생각
-        // 아니면 좌우이동하는 동안에는 높이 조절안하고
-        // 칸에 딱 이동했을때만 높이 조절 가능하게 하는걸로 하면 가능
-        mTray.transform.position = transform.position + offset;
-        mTray.transform.rotation = transform.rotation;
-    }
-    private void FixedUpdate()
-    {
-        if (mTray != null)
-        {
-            FollowRobot();
-        }
+        GetCurrentRackIndex();
     }
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Space))
+        
+        if (Input.GetKeyDown(KeyCode.Keypad1))
         {
-            LoadToRack();
+            MoveToRackNum(0);
+        }
+        if (Input.GetKeyDown(KeyCode.Keypad2))
+        {
+            MoveToRackNum(1);
+        }
+        if (Input.GetKeyDown(KeyCode.Keypad3))
+        {
+            MoveToRackNum(2);
+        }
+        if (Input.GetKeyDown(KeyCode.Keypad4))
+        {
+            MoveToRackNum(3);
+        }
+        if (Input.GetKeyDown(KeyCode.Keypad5))
+        {
+            MoveToRackNum(4);
         }
     }
 
-    public void UpDown()
+    public void MovePork()
     {
         
     }
-    
-    // 택배를 랙함에 싣는 함수
-    public void LoadToRack()
-    {
-        previousPos = mTray.transform.position;
-        StartCoroutine(LoadParcel());
-    }
 
-    IEnumerator LoadParcel()
+    public void GetCurrentRackIndex()
+    {
+        for (int i = 0; i < rackPoint.Count; i++)
+        {
+            if (Vector3.Distance(transform.position, rackPoint[i].position) < 0.01f)
+            {
+                currentRackIdx = i;
+            }
+        }
+    }
+    
+    public void GetCurrentHeightIndex()
+    {
+        for (int i = 0; i < heightPoint.Count; i++)
+        {
+            if (Vector3.Distance(transform.position, heightPoint[i].position) < 0.01f)
+            {
+                currentHeightIdx = i;
+            }
+        }
+    }
+    
+    // 좌우 이동
+    public void MoveToRackNum(int idx)
+    {
+        StartCoroutine(MoveToRack(idx));
+    }
+    
+    public void MoveToHeightNum(int idx)
+    {
+        StartCoroutine(MoveToHeight(idx));
+    }
+    
+    IEnumerator MoveToRack(int endIdx)
     {
         timer = 0;
         float LoadingDuration = 1f / LoadingTime;
         while (true)
         {
             timer += Time.deltaTime * LoadingDuration;
-            mTray.transform.position = previousPos + new Vector3(0,0,Mathf.Lerp(previousPos.z, previousPos.z + 0.72f, timer));
+            Vector3 startPoint = rackPoint[currentRackIdx].position;
+            Vector3 endPoint = rackPoint[endIdx].position;
+            transform.position = Vector3.Lerp(startPoint, endPoint, timer);
             
-            if (mTray.transform.position.z >= previousPos.z + 0.7f)
+            if (Vector3.Distance(transform.position, endPoint) <= 0.001f)
             {
-                print("도달");
-                mTray_rb.isKinematic = false;
-                mTray_rb.useGravity = true;
-                mTray = null;
+                GetCurrentRackIndex();
                 yield break;
             }
             yield return null;
         }
-        
     }
+    
+    IEnumerator MoveToHeight(int endIdx)
+    {
+        timer = 0;
+        float LoadingDuration = 1f / LoadingTime;
+        while (true)
+        {
+            timer += Time.deltaTime * LoadingDuration;
+            Vector3 startPoint = rackPoint[currentHeightIdx].position;
+            Vector3 endPoint = rackPoint[endIdx].position;
+            transform.position = Vector3.Lerp(startPoint, endPoint, timer);
+            
+            if (Vector3.Distance(transform.position, endPoint) <= 0.001f)
+            {
+                GetCurrentHeightIndex();
+                yield break;
+            }
+            yield return null;
+        }
+    }
+    
     
     // 택배를 랙함에서 빼내는 함수
     public void RetrieveFromRack()

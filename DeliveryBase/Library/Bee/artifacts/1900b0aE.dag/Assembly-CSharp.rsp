@@ -345,11 +345,13 @@
 -r:"Library/Bee/artifacts/1900b0aE.dag/Unity.VSCode.Editor.ref.dll"
 -r:"Library/Bee/artifacts/1900b0aE.dag/UnityEditor.UI.ref.dll"
 -r:"Library/Bee/artifacts/1900b0aE.dag/UnityEngine.UI.ref.dll"
-"Assets/Magnet.cs"
 "Assets/Scripts/Handler.cs"
+"Assets/Scripts/Magnet.cs"
+"Assets/Scripts/Pork.cs"
 "Assets/Scripts/RackManager.cs"
 "Assets/Scripts/RobotController.cs"
 "Assets/Scripts/Tray.cs"
+"Assets/Scripts/UIManager.cs"
 -langversion:9.0
 
 /deterministic
