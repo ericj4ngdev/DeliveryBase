@@ -25,7 +25,11 @@ public class RobotController : MonoBehaviour
 
     private void Update()
     {
-        
+        // Controller();
+    }
+
+    private void Controller()
+    {
         if (Input.GetKeyDown(KeyCode.Keypad1))
         {
             MoveToRackNum(0);
@@ -47,7 +51,7 @@ public class RobotController : MonoBehaviour
             MoveToRackNum(4);
         }
     }
-
+    
     public void MovePork()
     {
         
