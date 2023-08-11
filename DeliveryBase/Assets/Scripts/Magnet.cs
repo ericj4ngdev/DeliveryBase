@@ -20,7 +20,6 @@ public class Magnet : MonoBehaviour
     
     private void OnCollisionExit(Collision collision)
     {
-        
         if (collision.collider.CompareTag("Tray"))
         {
             print("Magnet.OnCollisionExit");

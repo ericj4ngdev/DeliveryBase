@@ -10,14 +10,18 @@ public class RobotController : MonoBehaviour
     public GameObject body;
     public GameObject lPork;
     public GameObject rPork;
-
+    
     public List<Transform> rackPoint = new List<Transform>();
     public List<Transform> heightPoint = new List<Transform>();
-    public float timer;
+    public float timer_Rack;
+    public float timer_Height;
     public float LoadingTime;
     public int currentRackIdx;
-    public int currentHeightIdx;
+    public int currentLCabinetHeightIdx;
+    public int currentRCabinetHeightIdx;
 
+    // private 
+    
     private void Start()
     {
         GetCurrentRackIndex();
@@ -26,7 +30,8 @@ public class RobotController : MonoBehaviour
 
     private void Update()
     {
-        Controller();
+        // Controller();
+        // mTray는 Handler가 가진 Tray와 동기화하기
     }
 
     private void Controller()
@@ -51,18 +56,8 @@ public class RobotController : MonoBehaviour
         {
             MoveToRackNum(4);
         }
-
-        if (Input.GetKeyDown(KeyCode.DownArrow))
-        {
-            MoveToHeightNum(0);
-        }
-        if (Input.GetKeyDown(KeyCode.UpArrow))
-        {
-            MoveToHeightNum(heightPoint.Count-1);
-        }
     }
     
-
     public void GetCurrentRackIndex()
     {
         for (int i = 0; i < rackPoint.Count; i++)
@@ -73,39 +68,60 @@ public class RobotController : MonoBehaviour
             }
         }
     }
-    
+
     public void GetCurrentHeightIndex()
+    {
+        GetCurrentLeftCabinetHeightIndex();
+        GetCurrentRightCabinetHeightIndex();
+    }
+    public void GetCurrentLeftCabinetHeightIndex()
     {
         for (int i = 0; i < heightPoint.Count; i++)
         {
             if (Mathf.Abs(lPork.transform.position.y - heightPoint[i].position.y) < 0.01f)
             {
-                currentHeightIdx = i;
+                currentLCabinetHeightIdx = i;
             }
         }
     }
-    
+    public void GetCurrentRightCabinetHeightIndex()
+    {
+        for (int i = 0; i < heightPoint.Count; i++)
+        {
+            if (Mathf.Abs(rPork.transform.position.y - heightPoint[i].position.y) < 0.01f)
+            {
+                currentRCabinetHeightIdx = i;
+            }
+        }
+    }
     // 좌우 이동
     public void MoveToRackNum(int idx)
     {
         StartCoroutine(MoveToRack(idx));
     }
     
-    public void MoveToHeightNum(int idx)
+    public void MoveToHeightNum(char whichCabinet, int endIdx)
     {
-        StartCoroutine(MoveToHeight(idx));
+        if (whichCabinet == 'L')
+        {
+            StartCoroutine(MoveToHeight(lPork, currentLCabinetHeightIdx, endIdx));
+        }
+        if (whichCabinet == 'R')
+        {
+            StartCoroutine(MoveToHeight(rPork, currentRCabinetHeightIdx, endIdx));
+        }
     }
     
     IEnumerator MoveToRack(int endIdx)
     {
-        timer = 0;
+        timer_Rack = 0;
         float LoadingDuration = 1f / LoadingTime;
         while (true)
         {
-            timer += Time.deltaTime * LoadingDuration;
+            timer_Rack += Time.deltaTime * LoadingDuration;
             Vector3 startPoint = rackPoint[currentRackIdx].position;
             Vector3 endPoint = rackPoint[endIdx].position;
-            transform.position = Vector3.Lerp(startPoint, endPoint, timer);
+            transform.position = Vector3.Lerp(startPoint, endPoint, timer_Rack);
             
             if (Vector3.Distance(transform.position, endPoint) <= 0.001f)
             {
@@ -116,18 +132,18 @@ public class RobotController : MonoBehaviour
         }
     }
     
-    IEnumerator MoveToHeight(int endIdx)
+    IEnumerator MoveToHeight(GameObject pork, int currentHeightIdx, int endIdx)
     {
-        timer = 0;
+        timer_Height = 0;
         float LoadingDuration = 1f / LoadingTime;
         while (true)
         {
-            timer += Time.deltaTime * LoadingDuration;
+            timer_Height += Time.deltaTime * LoadingDuration;
             float startPoint = heightPoint[currentHeightIdx].position.y;
-            float endPoint = heightPoint[endIdx].position.y;
-            lPork.transform.position = new Vector3(lPork.transform.position.x,Mathf.Lerp(startPoint, endPoint, timer),lPork.transform.position.z);
+            float endPoint = heightPoint[endIdx - 1].position.y;
+            pork.transform.position = new Vector3(pork.transform.position.x,Mathf.Lerp(startPoint, endPoint, timer_Height),pork.transform.position.z);
             
-            if (Mathf.Abs(lPork.transform.position.y - endPoint) < 0.01f)
+            if (Mathf.Abs(pork.transform.position.y - endPoint) < 0.001f)
             {
                 GetCurrentHeightIndex();
                 yield break;

@@ -18,7 +18,7 @@ public class Handler : MonoBehaviour
     public Transform axis;
     private bool hasControl;
     public HandleType handleType;
-    [SerializeField] private GameObject mTray;
+    private GameObject mTray;
     private Magnet magnet;
 
     

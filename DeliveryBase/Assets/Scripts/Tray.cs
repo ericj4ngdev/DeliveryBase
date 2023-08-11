@@ -5,7 +5,8 @@ using UnityEngine;
 
 public class Tray : MonoBehaviour
 {
-    private bool hasControl;
+    public bool IsLoaded;
+    private GameObject mPercel;
     private void Update()
     {
         
@@ -16,7 +17,20 @@ public class Tray : MonoBehaviour
         // print("OnCollisionEnter");
         if (collision.gameObject.CompareTag("Parcel"))
         {
-            collision.transform.SetParent(transform);
+            if (mPercel == null)
+            {
+                collision.transform.SetParent(transform);
+                mPercel = collision.gameObject;
+                IsLoaded = true;
+            }
+        }
+    }
+    private void OnCollisionExit(Collision collision)
+    {
+        if (collision.collider.CompareTag("Parcel"))
+        {
+            print("Tray.OnCollisionExit");
+            mPercel = null;
         }
     }
 }
