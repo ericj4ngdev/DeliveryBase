@@ -3,21 +3,35 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 public class UIManager : MonoBehaviour
 {
-    public Slider slider;
-    public Slider slider_8;
-    public Slider slider_9;
-    public Slider slider_10;
+    [Tooltip("List")]
+    public List<Slider> sliders = new List<Slider>();
+    public List<Button> rackBtns = new List<Button>();
+    
     public TMP_Dropdown cabinetLocation;
-    public TextMeshProUGUI heightText;
     public List<GameObject> rackImage = new List<GameObject>();
+
+    public Tray tray;
+
+    public string mLocation;
+    public string mType;
+    public int mRack_num;
+    public int mHeight;
+
+    [Tooltip("Text")] 
+    public TextMeshProUGUI cabinetTypeText;
+    public TextMeshProUGUI rackNumText;
+    public TextMeshProUGUI heightText;
     
     
-    public List<Button> rackNum = new List<Button>();
-    private int height;
+    [SerializeField]
+    private RobotController robot;
+    
+
 
     public UnityEvent onSelectCabinet;
 
@@ -25,6 +39,7 @@ public class UIManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        robot = Transform.FindObjectOfType<RobotController>();
         // slider.wholeNumbers = true; // 슬라이더가 정수값만 가질 수 있도록 설정
         // UnityEvent 
     }
@@ -34,73 +49,91 @@ public class UIManager : MonoBehaviour
     {
 
         SliderToHeight();
-        SliderToHeight_2();
-        SliderToHeight_3();
     }
 
     public void SelectCabinet()
     {
-        foreach (var VARIABLE in rackNum)
+        foreach (var VARIABLE in rackBtns)
         {
             VARIABLE.gameObject.SetActive(true);
         }
         if (cabinetLocation.value == 0)
         {
-            rackNum[4].gameObject.SetActive(false);
-            rackNum[10].gameObject.SetActive(false);
-            rackNum[11].gameObject.SetActive(false);
+            rackBtns[4].gameObject.SetActive(false);
+            rackBtns[10].gameObject.SetActive(false);
+            rackBtns[11].gameObject.SetActive(false);
+            cabinetTypeText.text = "Left";
         }
 
         if (cabinetLocation.value == 1)
         {
-            rackNum[0].gameObject.SetActive(false);
-            rackNum[1].gameObject.SetActive(false);
-            rackNum[5].gameObject.SetActive(false);
-            rackNum[6].gameObject.SetActive(false);
+            rackBtns[0].gameObject.SetActive(false);
+            rackBtns[1].gameObject.SetActive(false);
+            rackBtns[5].gameObject.SetActive(false);
+            rackBtns[6].gameObject.SetActive(false);
+            cabinetTypeText.text = "Right";
         }
+        
+        mType = cabinetTypeText.text;
         onSelectCabinet.Invoke();
     }
 
-    public void SelectRack()
+    public void SelectRack(int num)
     {
         // 랙함 버튼에 따라 랙함 UI이미지가 달라진다. 
-        
-        
-        
+        mRack_num = num;
+        // 해당 랙함의 슬라이더 이미지 활성화
+        foreach (var VARIABLE in sliders)
+        {
+            VARIABLE.gameObject.SetActive(false);
+        }
+
+        rackNumText.text = mRack_num.ToString();
+        sliders[mRack_num].gameObject.SetActive(true);
     }
     
-    public void SelectHeight()
+    public void SelectHeight(int height)
     {
-        
+        // mHeight = height;
+    }
+
+    public void MoveToLocation()
+    {
+        if (mType == "Left")
+        {
+            if (mRack_num >= 5)
+            {
+                robot.MoveToRackNum(mRack_num - 5);
+            }
+            else
+            {
+                robot.MoveToRackNum(mRack_num);
+            }
+        }
+
+        if (mType == "Right")
+        {
+            if (mRack_num >= 5)
+            {
+                robot.MoveToRackNum(mRack_num - 7);
+            }
+            else
+            {
+                robot.MoveToRackNum(mRack_num);
+            }
+        }
+        robot.MoveToHeightNum(mHeight);
     }
 
     private void SliderToHeight()
     {
+        // 어떤 슬라이더인지 slider 인덱스를 받아야 한다. 
+        
         // 가우스 함수처럼 슬라이더 값을 int형으로 변환
-        height = (int)Mathf.Round(slider.value * 37) + 1;
+        mHeight = (int)Mathf.Round(sliders[mRack_num].value * 37) + 1;
         // 값의 범위를 1~38로 제한
-        height = Mathf.Clamp(height, 1, 38);
-        heightText.text = height.ToString();
+        mHeight = Mathf.Clamp(mHeight, 1, 38);
+        heightText.text = mHeight.ToString();
+        
     }
-    
-    private void SliderToHeight_2()
-    {
-        // 가우스 함수처럼 슬라이더 값을 int형으로 변환
-        height = (int)Mathf.Round(slider_10.value * 4) + 1;
-        // 값의 범위를 1~5로 제한
-        height = Mathf.Clamp(height, 1, 5);
-        heightText.text = height.ToString();
-    }
-    
-    private void SliderToHeight_3()
-    {
-        // 가우스 함수처럼 슬라이더 값을 int형으로 변환
-        height = (int)Mathf.Round(slider_8.value * 11) + 1;
-        // slider_9
-        // 값의 범위를 1~12로 제한
-        height = Mathf.Clamp(height, 1, 12);
-        heightText.text = height.ToString();
-    }
-    
-    
 }

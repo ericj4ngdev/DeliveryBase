@@ -41,7 +41,6 @@ public class Handler : MonoBehaviour
         {
             StartCoroutine(LoadLeftAllProcess());
         }
-        
         // 자식 콜라이더에서 감지하는 tray를 가져온다. 
         if (magnet.mTray != null) print("감지");
     }
