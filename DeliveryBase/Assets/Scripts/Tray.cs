@@ -2,15 +2,12 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 public class Tray : MonoBehaviour
 {
-    public bool IsLoaded;
+    public bool mIsLoaded;
     private GameObject mPercel;
-    private void Update()
-    {
-        
-    }
 
     private void OnCollisionEnter(Collision collision)
     {
@@ -21,7 +18,7 @@ public class Tray : MonoBehaviour
             {
                 collision.transform.SetParent(transform);
                 mPercel = collision.gameObject;
-                IsLoaded = true;
+                mIsLoaded = true;
             }
         }
     }

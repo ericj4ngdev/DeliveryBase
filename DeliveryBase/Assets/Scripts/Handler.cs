@@ -12,14 +12,19 @@ public enum HandleType
 
 public class Handler : MonoBehaviour
 {
+    [Header("Handle waypoint")]
+    [Tooltip("Waypoints where handle move")]
     public List<Transform> waypoint;
-    public float timer;
-    public float LoadingTime;
     public Transform axis;
-    private bool hasControl;
     public HandleType handleType;
-    private GameObject mTray;
-    private Magnet magnet;
+    
+    // private이지만 디버깅 용으로 public
+    [Header("Debugging")]
+    public bool hasControl;        // Tray 제어권 여부 
+    public GameObject mTray;
+    [SerializeField] private float timer;
+    // [SerializeField] private float LoadingTime;
+    [SerializeField] private Magnet magnet;
 
     
     // Start is called before the first frame update
@@ -28,89 +33,37 @@ public class Handler : MonoBehaviour
         Transform childTransform = transform.GetChild(0); // 첫 번째 자식 오브젝트
         magnet = childTransform.GetComponent<Magnet>();
         hasControl = false;
-        
     }
     
     // Update is called once per frame
     void Update()
     {
-        if (handleType == 0)
-            LeftController();
-        else RightController();
+        // if (handleType == 0) LeftController();
+        // else RightController();
         if (Input.GetKeyDown(KeyCode.Space))
         {
-            StartCoroutine(LoadLeftAllProcess());
+            // StartCoroutine(LoadLeftAllProcess());
         }
         // 자식 콜라이더에서 감지하는 tray를 가져온다. 
-        if (magnet.mTray != null) print("감지");
+        if (magnet.detectedmTray != null) print("감지");
     }
-    
-    IEnumerator LoadLeftAllProcess()
-    {
 
-        if (handleType == (HandleType)0)
-        {
-            yield return StartCoroutine(Hide());
-        }
-
-        yield return new WaitForSeconds(LoadingTime * 0.5f);
-        
-        if (handleType == (HandleType)1)
-        {
-            GetTray();
-            yield return StartCoroutine(Push());
-            UnloadTray();
-            yield return StartCoroutine(Pull());
-            // 다시 가져오기
-            yield return StartCoroutine(Push());
-            GetTray();
-            yield return StartCoroutine(Pull());
-            UnloadTray();
-            yield return StartCoroutine(Hide());
-        }
-        
-        yield return new WaitForSeconds(LoadingTime * 2.9f);
-        
-        // 나타나서 잡고 넣기 
-        if (handleType == (HandleType)0)
-        {
-            yield return StartCoroutine(Show());
-            GetTray();
-            yield return StartCoroutine(Push());
-            UnloadTray();
-            yield return StartCoroutine(Pull());
-            yield return StartCoroutine(Push());
-            GetTray();
-            yield return StartCoroutine(Pull());
-            UnloadTray();
-        }
-        
-        yield return new WaitForSeconds(LoadingTime);
-        
-        if (handleType == (HandleType)1)
-        {
-            yield return StartCoroutine(Show());
-        }
-        print("코루틴 끝");
-        
-    }
-    
-    IEnumerator Push()
+    public IEnumerator Push(float LoadingTime)
     {
-        StartCoroutine(MoveTray(0,1));
+        StartCoroutine(MoveHandler(0,1, LoadingTime));
         yield return new WaitForSeconds(LoadingTime);
     }
     
-    IEnumerator Pull()
+    public IEnumerator Pull(float LoadingTime)
     {
-        StartCoroutine(MoveTray(1,0));
+        StartCoroutine(MoveHandler(1,0, LoadingTime));
         yield return new WaitForSeconds(LoadingTime);
     }
 
-    public void GetTray()
+    public void AttachTray()
     {
         // Magnet에서 감지조차 안되면 mTray는 null이므로 바로 함수 끝.
-        if (magnet.mTray == null)
+        if (magnet.detectedmTray == null)
         {
             print("감지된 Tray가 없습니다.");
             return;
@@ -119,17 +72,16 @@ public class Handler : MonoBehaviour
         if (mTray == null)
         {
             hasControl = true;
-            mTray = magnet.mTray;
+            mTray = magnet.detectedmTray;       // 마그넷 정보를 가져와서 감지된 tray를 넣는다. 
             mTray.transform.SetParent(transform);
         }
         else print("mTray가 이미 있습니다.");
-
     }
     
-    public void UnloadTray()
+    public void DetachTray()
     {
         // Magnet에서 감지조차 안되면 mTray는 null이므로 바로 함수 끝.
-        if (magnet.mTray == null)
+        if (magnet.detectedmTray == null)
         {
             print("감지된 Tray가 없습니다.");
             return;
@@ -144,23 +96,21 @@ public class Handler : MonoBehaviour
         else print("mTray가 없습니다.");
     }
     
-    IEnumerator Hide()
+    public IEnumerator Hide(float LoadingTime)
     {
-        StartCoroutine(MoveTray(0, 2));
-        StartCoroutine(RotateTray(0, 2));
+        StartCoroutine(MoveHandler(0, 2, LoadingTime));
+        StartCoroutine(RotateHandler(0, 2, LoadingTime));
         yield return new WaitForSeconds(LoadingTime);
     }
 
-    IEnumerator Show()
+    public IEnumerator Show(float LoadingTime)
     {
-        StartCoroutine(MoveTray(2, 0));
-        StartCoroutine(RotateTray(2, 0));
+        StartCoroutine(MoveHandler(2, 0, LoadingTime));
+        StartCoroutine(RotateHandler(2, 0, LoadingTime));
         yield return new WaitForSeconds(LoadingTime);
     }
-
     
-    
-    IEnumerator MoveTray(int startIdx, int endIdx)
+    public IEnumerator MoveHandler(int startIdx, int endIdx, float LoadingTime)
     {
         timer = 0;
         float LoadingDuration = 1f / LoadingTime;
@@ -178,8 +128,8 @@ public class Handler : MonoBehaviour
             yield return null;
         }
     }
-
-    IEnumerator RotateTray(int startIdx, int endIdx)
+ 
+    public IEnumerator RotateHandler(int startIdx, int endIdx, float LoadingTime)
     {
         timer = 0;
         float LoadingDuration = 1f / LoadingTime;
@@ -198,8 +148,9 @@ public class Handler : MonoBehaviour
             yield return null;
         }
     }
+}
 
-    private void RightController()
+/*private void RightController()
     {
         if (Input.GetKeyDown(KeyCode.Keypad4))
         {
@@ -223,7 +174,7 @@ public class Handler : MonoBehaviour
         }
         if (Input.GetKeyDown(KeyCode.Keypad7))
         {
-            GetTray();
+            AttachTray();
         }
         
     }
@@ -252,8 +203,6 @@ public class Handler : MonoBehaviour
         }
         if (Input.GetKeyDown(KeyCode.E))
         {
-            GetTray();
+            AttachTray();
         }
-    }
-
-}
+    }*/

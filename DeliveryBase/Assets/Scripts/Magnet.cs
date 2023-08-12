@@ -1,19 +1,21 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 public class Magnet : MonoBehaviour
 {
-    public GameObject mTray;
+    [Header("Debugging")]
+    public GameObject detectedmTray;
     private void OnCollisionEnter(Collision collision)
     {
         print("Magnet.OnCollisionStay");
         
         if (collision.collider.CompareTag("Tray"))
         {
-            if (mTray == null)
+            if (detectedmTray == null)
             {
-                mTray = collision.gameObject;
+                detectedmTray = collision.gameObject;
             }
         }
     }
@@ -23,7 +25,7 @@ public class Magnet : MonoBehaviour
         if (collision.collider.CompareTag("Tray"))
         {
             print("Magnet.OnCollisionExit");
-            mTray = null;
+            detectedmTray = null;
         }
     }
 }

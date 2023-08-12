@@ -6,19 +6,21 @@ using UnityEngine.Serialization;
 
 public class RobotController : MonoBehaviour
 {
-    [SerializeField] private GameObject mTray;
-    public GameObject body;
+    [Header("Pork")]
     public GameObject lPork;
     public GameObject rPork;
     
+    [Header("Robot Waypoints")]
     public List<Transform> rackPoint = new List<Transform>();
     public List<Transform> heightPoint = new List<Transform>();
-    public float timer_Rack;
-    public float timer_Height;
-    public float LoadingTime;
-    public int currentRackIdx;
-    public int currentLCabinetHeightIdx;
-    public int currentRCabinetHeightIdx;
+    
+    [Header("Debugging")]
+    [SerializeField] private float timer_Rack;
+    [SerializeField] private float timer_Height;
+    [SerializeField] private float LoadingTime;
+    [SerializeField] private int currentRackIdx;
+    [SerializeField] private int currentLCabinetHeightIdx;
+    [SerializeField] private int currentRCabinetHeightIdx;
 
     // private 
     
@@ -30,8 +32,7 @@ public class RobotController : MonoBehaviour
 
     private void Update()
     {
-        // Controller();
-        // mTray는 Handler가 가진 Tray와 동기화하기
+        
     }
 
     private void Controller()
@@ -93,6 +94,11 @@ public class RobotController : MonoBehaviour
                 currentRCabinetHeightIdx = i;
             }
         }
+    }
+
+    public void GetCabinetInfo()
+    {
+        
     }
     // 좌우 이동
     public void MoveToRackNum(int idx)
