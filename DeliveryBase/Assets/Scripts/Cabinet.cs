@@ -19,6 +19,7 @@ public class Cabinet : MonoBehaviour
     private GameObject mTray;
     private Tray tray;
 
+    public int mRack_Num;
     // Start is called before the first frame update
     void Start()
     {
@@ -31,14 +32,117 @@ public class Cabinet : MonoBehaviour
         GetTrayInfo();
     }
 
-    public void Push()
+    public void PutTray()
     {
-        StartCoroutine(left_Handler.Push(loadingTime));
+        // 트레이가 있으면 실행하기
+        if (hasTray == true)
+        {
+            StartCoroutine(co_putTray());
+        }
+        else Debug.Log("트레이가 없습니다.");
     }
-    public void Pull()
+    public void GetTray()
     {
-        StartCoroutine(left_Handler.Pull(loadingTime));
+        // 트레이가 없으면 실행하기
+        if (hasTray == false)
+        {
+            StartCoroutine(co_getTray());
+        }
+        else Debug.Log("트레이가 이미 있습니다.");
     }
+
+    IEnumerator co_putTray()
+    {
+        // 0 : pull
+        // 1 : push
+        // 2 : Hide
+        if (mRack_Num < 5)
+        {
+            if (left_Handler.currentIndex != 2)
+            {
+                left_Handler.DetachTray();
+                yield return StartCoroutine(left_Handler.Hide(loadingTime));
+                // yield return new WaitForSeconds(loadingTime * 0.1f);
+            }
+            // 숨은 상태라면 보여주기
+            if (right_Handler.currentIndex == 2)
+            {
+                yield return StartCoroutine(right_Handler.Show(loadingTime));
+                // yield return new WaitForSeconds(loadingTime * 0.1f);
+                right_Handler.AttachTray();         // < 추가
+            }
+            yield return new WaitForSeconds(loadingTime * 0.1f);
+            yield return StartCoroutine(right_Handler.Push(loadingTime));
+            right_Handler.DetachTray();
+            yield return StartCoroutine(right_Handler.Pull(loadingTime));
+        }
+        else
+        {
+            // 숨은 상태라면 보여주기
+            if (left_Handler.currentIndex == 2)
+            {
+                yield return StartCoroutine(left_Handler.Show(loadingTime));
+                // yield return new WaitForSeconds(loadingTime * 0.1f);
+                left_Handler.AttachTray();         // < 추가
+            }
+            if (right_Handler.currentIndex != 2)
+            {
+                right_Handler.DetachTray();
+                yield return StartCoroutine(right_Handler.Hide(loadingTime));
+                // yield return new WaitForSeconds(loadingTime * 0.1f);
+            }
+            yield return new WaitForSeconds(loadingTime * 0.1f);
+            yield return StartCoroutine(left_Handler.Push(loadingTime));
+            left_Handler.DetachTray();
+            yield return StartCoroutine(left_Handler.Pull(loadingTime));
+        }
+        // 이미 숨은 상태이면 숨지 않기
+        // 안 숨어있으면 숨기
+        
+    }
+    
+    IEnumerator co_getTray()
+    {
+        if (mRack_Num < 5)
+        {
+            if (left_Handler.currentIndex != 2)
+            {
+                yield return StartCoroutine(left_Handler.Hide(loadingTime));
+                // yield return new WaitForSeconds(loadingTime * 0.1f);
+            }
+            // 숨은 상태라면 보여주기
+            if (right_Handler.currentIndex == 2)
+            {
+                yield return StartCoroutine(right_Handler.Show(loadingTime));
+                // yield return new WaitForSeconds(loadingTime * 0.1f);
+            }
+            yield return new WaitForSeconds(loadingTime * 0.1f);
+            yield return StartCoroutine(right_Handler.Push(loadingTime));
+            right_Handler.AttachTray();
+            yield return StartCoroutine(right_Handler.Pull(loadingTime));
+        }
+        else
+        {
+            // 안 숨겨져있으면 숨기기
+            if (right_Handler.currentIndex != 2)
+            {
+                yield return StartCoroutine(right_Handler.Hide(loadingTime));
+                // yield return new WaitForSeconds(loadingTime * 0.1f);
+            }
+            // 숨은 상태라면 보여주기
+            if (left_Handler.currentIndex == 2)
+            {
+                yield return StartCoroutine(left_Handler.Show(loadingTime));
+                // yield return new WaitForSeconds(loadingTime * 0.1f);
+            }
+            yield return new WaitForSeconds(loadingTime * 0.1f);
+            yield return StartCoroutine(left_Handler.Push(loadingTime));
+            left_Handler.AttachTray();
+            yield return StartCoroutine(left_Handler.Pull(loadingTime));
+        }
+    }
+    
+    
     
     public void GetTrayInfo()
     {

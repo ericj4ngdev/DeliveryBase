@@ -17,6 +17,8 @@ public class Handler : MonoBehaviour
     public List<Transform> waypoint;
     public Transform axis;
     public HandleType handleType;
+
+    public int currentIndex;
     
     // private이지만 디버깅 용으로 public
     [Header("Debugging")]
@@ -33,6 +35,7 @@ public class Handler : MonoBehaviour
         Transform childTransform = transform.GetChild(0); // 첫 번째 자식 오브젝트
         magnet = childTransform.GetComponent<Magnet>();
         hasControl = false;
+        currentIndex = 0;
     }
     
     // Update is called once per frame
@@ -51,12 +54,14 @@ public class Handler : MonoBehaviour
     public IEnumerator Push(float LoadingTime)
     {
         StartCoroutine(MoveHandler(0,1, LoadingTime));
+        currentIndex = 1;
         yield return new WaitForSeconds(LoadingTime);
     }
     
     public IEnumerator Pull(float LoadingTime)
     {
         StartCoroutine(MoveHandler(1,0, LoadingTime));
+        currentIndex = 0;
         yield return new WaitForSeconds(LoadingTime);
     }
 
@@ -100,6 +105,7 @@ public class Handler : MonoBehaviour
     {
         StartCoroutine(MoveHandler(0, 2, LoadingTime));
         StartCoroutine(RotateHandler(0, 2, LoadingTime));
+        currentIndex = 2;
         yield return new WaitForSeconds(LoadingTime);
     }
 

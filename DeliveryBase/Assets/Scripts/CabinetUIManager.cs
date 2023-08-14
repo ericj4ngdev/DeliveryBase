@@ -15,8 +15,6 @@ public class CabinetUIManager : MonoBehaviour
 {
     [Header("UI List")]
     public List<Slider> sliders = new List<Slider>();
-    public List<Button> rackBtns = new List<Button>();
-    
     [Header("Cabinet")]
     public Cabinet cabinet;
 
@@ -66,6 +64,7 @@ public class CabinetUIManager : MonoBehaviour
         // 이전 랙함의 슬라이더값 초기화를 위해 이전 랙함 번호 저장
         previous_mRack_num = mRack_num;
         mRack_num = rack_num;
+        cabinet.mRack_Num = rack_num;
         
         // 해당 랙함의 슬라이더 이미지 활성화
         foreach (var VARIABLE in sliders)
