@@ -350,6 +350,7 @@
 "Assets/Scripts/CabinetUIManager.cs"
 "Assets/Scripts/Handler.cs"
 "Assets/Scripts/Magnet.cs"
+"Assets/Scripts/Rack.cs"
 "Assets/Scripts/RobotController.cs"
 "Assets/Scripts/Tray.cs"
 "Assets/Scripts/UIManager.cs"
