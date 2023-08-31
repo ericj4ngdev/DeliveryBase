@@ -1,0 +1,8 @@
+D:\Github\DeliveryBase\Server\Server\bin\Debug\Server.exe.config
+D:\Github\DeliveryBase\Server\Server\bin\Debug\Server.exe
+D:\Github\DeliveryBase\Server\Server\bin\Debug\Server.pdb
+D:\Github\DeliveryBase\Server\Server\obj\Debug\Server.csproj.AssemblyReference.cache
+D:\Github\DeliveryBase\Server\Server\obj\Debug\Server.csproj.SuggestedBindingRedirects.cache
+D:\Github\DeliveryBase\Server\Server\obj\Debug\Server.csproj.CoreCompileInputs.cache
+D:\Github\DeliveryBase\Server\Server\obj\Debug\Server.exe
+D:\Github\DeliveryBase\Server\Server\obj\Debug\Server.pdb

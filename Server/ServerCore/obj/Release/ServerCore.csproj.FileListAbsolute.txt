@@ -1,0 +1,8 @@
+D:\Github\DeliveryBase\Server\ServerCore\bin\Release\ServerCore.exe.config
+D:\Github\DeliveryBase\Server\ServerCore\bin\Release\ServerCore.exe
+D:\Github\DeliveryBase\Server\ServerCore\bin\Release\ServerCore.pdb
+D:\Github\DeliveryBase\Server\ServerCore\obj\Release\ServerCore.csproj.AssemblyReference.cache
+D:\Github\DeliveryBase\Server\ServerCore\obj\Release\ServerCore.csproj.SuggestedBindingRedirects.cache
+D:\Github\DeliveryBase\Server\ServerCore\obj\Release\ServerCore.csproj.CoreCompileInputs.cache
+D:\Github\DeliveryBase\Server\ServerCore\obj\Release\ServerCore.exe
+D:\Github\DeliveryBase\Server\ServerCore\obj\Release\ServerCore.pdb
