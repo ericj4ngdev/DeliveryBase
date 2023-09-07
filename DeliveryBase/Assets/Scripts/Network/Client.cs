@@ -6,6 +6,10 @@ using System.Net.Sockets;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using System;
+using System.Net;
+using System.Text;
+
 
 public class Client : MonoBehaviour
 {
@@ -18,12 +22,14 @@ public class Client : MonoBehaviour
     private StreamWriter writer;
     private StreamReader reader;
     
+    DataPacket packet = new DataPacket();
+    
     // 서버 접속
     public void ConnectToServer()
     {
         if (socketReady) return;
 
-        string ip = IpInput.text == "" ? "103.218.160.127": IpInput.text;
+        string ip = IpInput.text == "" ? "172.30.1.11": IpInput.text;
         int port = PortInput.text == "" ? 7777 : Int32.Parse(PortInput.text);
 
         // 소켓 생성
@@ -51,6 +57,7 @@ public class Client : MonoBehaviour
         writer.WriteLine(data);
         writer.Flush();
     }
+    
     
     // SendInput의 OnSubmit 이벤트에 등록
     public void OnSendButton(InputField SendInput) 
@@ -81,7 +88,75 @@ public class Client : MonoBehaviour
         socket.Close();
         socketReady = false;
     }
+    // ===========================
 
+    private void Start()
+    {
+        
+
+    }
+
+    
+    
+    void SendHB(byte[] buffer)
+    {
+        if (!socketReady) return;
+        
+        packet.len = 7;
+        packet.protocol = 1001;
+        packet.bcc = 1;
+        
+        stream.Write(buffer, 0, buffer.Length);
+        Int32 len = packet.len;
+        Int32 protocol = packet.protocol;
+        byte bcc = packet.bcc;
+        
+        Debug.Log($"len : {len}");
+        Debug.Log($"protocol : {protocol}");
+        Debug.Log($"bcc : {bcc}");
+        
+        // writer.Write(buffer);
+        // writer.Flush();
+    }
+
+    public void OnSendButton()
+    {
+        byte[] buffer = GetBytes_Bind(packet);
+        SendHB(buffer);
+    }
+    // 패킷 사이즈 
+    public const int BODY_BIND_SIZE = 20 + 20 + 4 + 100;
+    public byte[] GetBytes_Bind(DataPacket packet)
+    {
+        byte[] btBuffer = new byte[BODY_BIND_SIZE];
+
+        MemoryStream ms = new MemoryStream(btBuffer, true);
+        BinaryWriter bw = new BinaryWriter(ms);
+
+        /*// Name - string
+        try
+        {
+            byte[] btName = new byte[20];
+            Encoding.UTF8.GetBytes(packet.Name, 0, packet.Name.Length, btName, 0);
+            bw.Write(btName);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine("Error : {0}", ex.Message.ToString());
+        }*/
+
+        // Grade - long
+        bw.Write(IPAddress.HostToNetworkOrder(packet.len));
+        bw.Write(IPAddress.HostToNetworkOrder(packet.protocol));
+        bw.Write(IPAddress.HostToNetworkOrder(packet.bcc));
+        
+        
+        bw.Close();
+        ms.Close();
+
+        return btBuffer;
+    }
+    
     // =====================================================================================
     // 서버로부터 받은 메시지 처리
     void ReadServerMessage()
@@ -98,6 +173,7 @@ public class Client : MonoBehaviour
             }
         }
     }
+    
 
     // 업데이트 함수에서 메시지 확인
     void Update()

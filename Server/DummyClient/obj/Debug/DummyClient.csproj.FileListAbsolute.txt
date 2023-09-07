@@ -1,8 +1,0 @@
-D:\Github\DeliveryBase\Server\DummyClient\bin\Debug\DummyClient.exe.config
-D:\Github\DeliveryBase\Server\DummyClient\bin\Debug\DummyClient.exe
-D:\Github\DeliveryBase\Server\DummyClient\bin\Debug\DummyClient.pdb
-D:\Github\DeliveryBase\Server\DummyClient\obj\Debug\DummyClient.csproj.AssemblyReference.cache
-D:\Github\DeliveryBase\Server\DummyClient\obj\Debug\DummyClient.csproj.SuggestedBindingRedirects.cache
-D:\Github\DeliveryBase\Server\DummyClient\obj\Debug\DummyClient.csproj.CoreCompileInputs.cache
-D:\Github\DeliveryBase\Server\DummyClient\obj\Debug\DummyClient.exe
-D:\Github\DeliveryBase\Server\DummyClient\obj\Debug\DummyClient.pdb
