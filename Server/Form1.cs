@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
@@ -58,52 +59,53 @@ namespace Server
 
                     stream = tcpClient.GetStream();     // 클라와 연결
 
-                    // 읽을게 있다면
-                    // while (stream.Read(buffer, 0, buffer.Length) != 0)                   
-
-
                     streamReader = new StreamReader(tcpClient.GetStream());
                     streamWriter = new StreamWriter(tcpClient.GetStream());
                     streamWriter.AutoFlush = true;
 
                     while (tcpClient.Connected)
                     {
+                        // 읽을 게 있으면 수신
                         if (stream.Read(buffer, 0, buffer.Length) != 0)
                         {
-                            DataPacket packet = GetBindAck(buffer);
-                            Int32 len = packet.len;
-                            Int32 protocol = packet.protocol;
-                            // byte bcc = packet.bcc;
-
-                            writeRichTextbox($"len : {len}");
-                            writeRichTextbox($"protocol : {protocol}");
-                            // writeRichTextbox($"bcc : {bcc}\n");
-                            writeRichTextbox("==============================");
+                            Recv(buffer);
                         }
-                        // string receiveData1 = streamReader.ReadLine();  // 수신 데이터를 읽어서 receiveData1 변수에 저장
-                        // writeRichTextbox(receiveData1);                 // receiveData1 출력
                     }
                 }
             }
             catch (Exception e)
             {
-
                 Console.WriteLine(e.Message);
             }            
         }
 
-
-        private static DataPacket GetBindAck(byte[] btfuffer)
+        // ===================================== 수신 (버퍼 -> 구조체 ) =================================
+        // 수신
+        /*void Recv(byte[] buffer)
         {
-            DataPacket packet = new DataPacket();
+            Heartbeat packet = GetStream(buffer);
+            Int32 len = packet.len;
+            Int32 protocol = packet.protocol;            
+        }*/
+
+        // 역직렬화(버퍼 -> 구조체)
+        private Heartbeat Recv(byte[] btfuffer)
+        {
+            Heartbeat packet = new Heartbeat();
 
             MemoryStream ms = new MemoryStream(btfuffer, false);
             BinaryReader br = new BinaryReader(ms);
 
-            packet.len = IPAddress.NetworkToHostOrder(br.ReadInt32());
-            packet.protocol = IPAddress.NetworkToHostOrder(br.ReadInt32());
-            // packet.bcc = br.ReadBytes(10);
+            // 직렬화된 데이터에서 멤버변수들을 가져온다. 
+            int len = IPAddress.NetworkToHostOrder(br.ReadInt32());
+            int protocol = IPAddress.NetworkToHostOrder(br.ReadInt32());
+            int bcc = IPAddress.NetworkToHostOrder(br.ReadInt32());
 
+            // 디버깅
+            writeRichTextbox("======= Recv Heartbeat =======");
+            writeRichTextbox($"len : {len}");
+            writeRichTextbox($"protocol : {protocol}");
+            writeRichTextbox($"bcc : {bcc}");
 
             br.Close();
             ms.Close();
@@ -111,11 +113,55 @@ namespace Server
             return packet;
         }
 
-        public void Recv(byte[] buff)
-        {
+        // ===================================== 송신 (구조체 -> 버퍼) =================================
+        #region HeartBeat 전송
+        public const int BODY_BIND_SIZE = 20 + 20 + 4 + 100;
 
+        // 직렬화
+        byte[] GetBytes_Bind(Heartbeat pHeartbeat)
+        {
+            byte[] btBuffer = new byte[BODY_BIND_SIZE];
+
+            MemoryStream ms = new MemoryStream(btBuffer, true);
+            BinaryWriter bw = new BinaryWriter(ms);
+
+            // packet을 byte화 함
+            bw.Write(IPAddress.HostToNetworkOrder(pHeartbeat.len));
+            bw.Write(IPAddress.HostToNetworkOrder(pHeartbeat.protocol));
+            bw.Write(IPAddress.HostToNetworkOrder(pHeartbeat.bcc));
+
+            // 디버깅
+            writeRichTextbox("======= Send Heartbeat =======");
+            writeRichTextbox($"len : {pHeartbeat.len}");
+            writeRichTextbox($"protocol : {pHeartbeat.protocol}");
+            writeRichTextbox($"bcc : {pHeartbeat.bcc}");
+
+            bw.Close();
+            ms.Close();
+
+            return btBuffer;
         }
 
+        void SendHB(byte[] buffer)
+        {
+            if (!tcpClient.Connected) return;
+            
+            stream.Write(buffer, 0, buffer.Length);     // 보내기 write
+            /*// 디버깅
+            Heartbeat pHeartbeat = new Heartbeat();
+
+            Int32 len = pHeartbeat.len;
+            Int32 protocol = pHeartbeat.protocol;
+            byte bcc = pHeartbeat.bcc;
+
+            writeRichTextbox($"len : {len}");
+            writeRichTextbox($"protocol : {protocol}");
+            writeRichTextbox($"bcc : {bcc}");*/
+
+        }
+        #endregion
+
+        // =================== Button ===================
 
         // 문자열 뒤쪽에 위치한 null 을 제거한 후에 공백문자를 제거한다.
         private static string ExtendedTrim(string source)
@@ -129,7 +175,6 @@ namespace Server
 
             return dest.TrimEnd('\0').Trim();
         }
-
 
         // richTextbox1 에 쓰기 함수
         private void writeRichTextbox(string str)
@@ -146,5 +191,14 @@ namespace Server
             streamWriter.WriteLine(sendData1); // 문자열 데이터 전송
         }
 
+        private void button4_Click(object sender, EventArgs e)
+        {
+            Heartbeat pHeartbeat = new Heartbeat();
+            pHeartbeat.len = 2;
+            pHeartbeat.protocol = 2000;
+            pHeartbeat.bcc = 2;
+            byte[] buffer = GetBytes_Bind(pHeartbeat);
+            SendHB(buffer);
+        }
     }
 }
