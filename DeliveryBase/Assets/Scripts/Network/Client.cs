@@ -67,6 +67,7 @@ public class Client : MonoBehaviour
 
     public void OnSendButton()
     {
+        pHeartbeat.id = new char[32]; // id 배열 초기화
         SetHB();
         byte[] buffer = GetBytes_Bind(pHeartbeat);      // 직렬화된 버퍼
         SendHB(buffer);     // 직렬화된 버퍼를 송신
@@ -90,6 +91,7 @@ public class Client : MonoBehaviour
     private Heartbeat Recv(byte[] btfuffer)
     {
         Heartbeat packet = new Heartbeat();
+        packet.id = new char[32]; // id 배열 초기화
 
         MemoryStream ms = new MemoryStream(btfuffer, false);    // btfuffer -> stream 변환
         BinaryReader br = new BinaryReader(ms);                 // stream -> 직렬화
@@ -97,13 +99,16 @@ public class Client : MonoBehaviour
         // 직렬화된 데이터에서 멤버변수들을 가져온다. 
         int len = IPAddress.NetworkToHostOrder(br.ReadInt32());
         int protocol = IPAddress.NetworkToHostOrder(br.ReadInt32());
-        int bcc = IPAddress.NetworkToHostOrder(br.ReadInt32());
+        byte bcc = br.ReadByte();
+        byte[] idBytes = br.ReadBytes(packet.id.Length * 2); // 2바이트씩 읽어옵니다.
+        packet.id = Encoding.Unicode.GetChars(idBytes);
 
         // 디버깅
         Debug.Log("======= Recv Heartbeat =======");
         Debug.Log($"len : {len}");
         Debug.Log($"protocol : {protocol}");
         Debug.Log($"bcc : {bcc}");
+        Debug.Log($"id : {new string(packet.id)}");
 
         br.Close();
         ms.Close();
@@ -126,13 +131,18 @@ public class Client : MonoBehaviour
         // packet을 byte화 함
         bw.Write(IPAddress.HostToNetworkOrder(pHeartbeat.len));
         bw.Write(IPAddress.HostToNetworkOrder(pHeartbeat.protocol));
-        bw.Write(IPAddress.HostToNetworkOrder(pHeartbeat.bcc));
+        bw.Write(pHeartbeat.bcc);
+        char[] id = pHeartbeat.id;
+        byte[] idBytes = Encoding.Unicode.GetBytes(id);
+        bw.Write(idBytes);
+
 
         // 보낼 구조체 멤버변수 디버깅
         Debug.Log("======= Send Heartbeat =======");
         Debug.Log($"len : {pHeartbeat.len}");
         Debug.Log($"protocol : {pHeartbeat.protocol}");
         Debug.Log($"bcc : {pHeartbeat.bcc}");
+        Debug.Log($"id : {new string(pHeartbeat.id)}");
 
         bw.Close();
         ms.Close();
@@ -144,6 +154,7 @@ public class Client : MonoBehaviour
         pHeartbeat.len = 1;
         pHeartbeat.protocol = 1000;
         pHeartbeat.bcc = 1;
+        pHeartbeat.id[0] = 'a';
     }
 
     void SendHB(byte[] buffer)

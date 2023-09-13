@@ -8,6 +8,7 @@ public struct Heartbeat
 {
     public Int32 len;
     public Int32 protocol;
+    public char[] id;               // = tray ID
     public byte bcc;
 }
 

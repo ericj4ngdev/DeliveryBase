@@ -92,6 +92,7 @@ namespace Server
         private Heartbeat Recv(byte[] btfuffer)
         {
             Heartbeat packet = new Heartbeat();
+            packet.id = new char[32]; // id 배열 초기화
 
             MemoryStream ms = new MemoryStream(btfuffer, false);
             BinaryReader br = new BinaryReader(ms);
@@ -99,13 +100,16 @@ namespace Server
             // 직렬화된 데이터에서 멤버변수들을 가져온다. 
             int len = IPAddress.NetworkToHostOrder(br.ReadInt32());
             int protocol = IPAddress.NetworkToHostOrder(br.ReadInt32());
-            int bcc = IPAddress.NetworkToHostOrder(br.ReadInt32());
+            byte bcc = br.ReadByte();
+            byte[] idBytes = br.ReadBytes(packet.id.Length * 2); // 2바이트씩 읽어옵니다.
+            packet.id = Encoding.Unicode.GetChars(idBytes);
 
             // 디버깅
             writeRichTextbox("======= Recv Heartbeat =======");
             writeRichTextbox($"len : {len}");
             writeRichTextbox($"protocol : {protocol}");
             writeRichTextbox($"bcc : {bcc}");
+            writeRichTextbox($"id : {new string(packet.id)}");
 
             br.Close();
             ms.Close();
@@ -128,13 +132,17 @@ namespace Server
             // packet을 byte화 함
             bw.Write(IPAddress.HostToNetworkOrder(pHeartbeat.len));
             bw.Write(IPAddress.HostToNetworkOrder(pHeartbeat.protocol));
-            bw.Write(IPAddress.HostToNetworkOrder(pHeartbeat.bcc));
+            bw.Write(pHeartbeat.bcc);
+            char[] id = pHeartbeat.id;
+            byte[] idBytes = Encoding.Unicode.GetBytes(id);
+            bw.Write(idBytes);
 
             // 디버깅
             writeRichTextbox("======= Send Heartbeat =======");
             writeRichTextbox($"len : {pHeartbeat.len}");
             writeRichTextbox($"protocol : {pHeartbeat.protocol}");
             writeRichTextbox($"bcc : {pHeartbeat.bcc}");
+            writeRichTextbox($"id : {new string(pHeartbeat.id)}");
 
             bw.Close();
             ms.Close();
@@ -194,9 +202,11 @@ namespace Server
         private void button4_Click(object sender, EventArgs e)
         {
             Heartbeat pHeartbeat = new Heartbeat();
+            pHeartbeat.id = new char[32]; // id 배열 초기화
             pHeartbeat.len = 2;
             pHeartbeat.protocol = 2000;
             pHeartbeat.bcc = 2;
+            pHeartbeat.id[0] = 'b';
             byte[] buffer = GetBytes_Bind(pHeartbeat);
             SendHB(buffer);
         }
