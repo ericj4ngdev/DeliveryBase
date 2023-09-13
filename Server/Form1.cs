@@ -22,6 +22,8 @@ namespace Server
         StreamWriter streamWriter;  // 데이타 쓰기 위한 StreamWriter(Send)
         TcpClient tcpClient;
         NetworkStream stream;
+        IPAddress[] addr;
+
         public Form1()
         {
             InitializeComponent();
@@ -29,15 +31,26 @@ namespace Server
 
         private void Form1_Load(object sender, EventArgs e)
         {
-
+            GetAddress();
         }
-                
 
         private void button1_Click(object sender, EventArgs e)
         {
             Thread thread1 = new Thread(connect);      // thread1 생성. 시작은 connect()함수
             thread1.IsBackground = true;        // Form 종료 시, thread1도 종료
             thread1.Start();                    // thread1 시작
+        }
+
+        private void GetAddress()
+        {
+            IPHostEntry ipEntry = Dns.GetHostEntry(Dns.GetHostName());
+            addr = ipEntry.AddressList;
+            // for (int i = 0; i < addr.Length; i++)
+            // {
+            //     // 디버깅 해보면 1번이 활성화된 IP이다.
+            //     writeRichTextbox($"IP Address {i}: {addr[i].ToString()} ");
+            // }
+            textBox1.Text = addr[1].ToString();
         }
 
         private void connect()
@@ -80,14 +93,6 @@ namespace Server
         }
 
         // ===================================== 수신 (버퍼 -> 구조체 ) =================================
-        // 수신
-        /*void Recv(byte[] buffer)
-        {
-            Heartbeat packet = GetStream(buffer);
-            Int32 len = packet.len;
-            Int32 protocol = packet.protocol;            
-        }*/
-
         // 역직렬화(버퍼 -> 구조체)
         private Heartbeat Recv(byte[] btfuffer)
         {
@@ -109,7 +114,7 @@ namespace Server
             writeRichTextbox($"len : {len}");
             writeRichTextbox($"protocol : {protocol}");
             writeRichTextbox($"bcc : {bcc}");
-            writeRichTextbox($"id : {new string(packet.id)}");
+            writeRichTextbox($"id : {packet.id[0].ToString()}");
 
             br.Close();
             ms.Close();
@@ -142,7 +147,7 @@ namespace Server
             writeRichTextbox($"len : {pHeartbeat.len}");
             writeRichTextbox($"protocol : {pHeartbeat.protocol}");
             writeRichTextbox($"bcc : {pHeartbeat.bcc}");
-            writeRichTextbox($"id : {new string(pHeartbeat.id)}");
+            writeRichTextbox($"id : {pHeartbeat.id[0].ToString()}");
 
             bw.Close();
             ms.Close();

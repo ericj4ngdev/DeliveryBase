@@ -9,3 +9,14 @@ E:\Github\DeliveryBase\Server\obj\Debug\Server.csproj.GenerateResource.cache
 E:\Github\DeliveryBase\Server\obj\Debug\Server.csproj.CoreCompileInputs.cache
 E:\Github\DeliveryBase\Server\obj\Debug\Server.exe
 E:\Github\DeliveryBase\Server\obj\Debug\Server.pdb
+D:\Github\DeliveryBase\Server\bin\Debug\Server.exe.config
+D:\Github\DeliveryBase\Server\bin\Debug\Server.exe
+D:\Github\DeliveryBase\Server\bin\Debug\Server.pdb
+D:\Github\DeliveryBase\Server\obj\Debug\Server.csproj.AssemblyReference.cache
+D:\Github\DeliveryBase\Server\obj\Debug\Server.csproj.SuggestedBindingRedirects.cache
+D:\Github\DeliveryBase\Server\obj\Debug\Server.Form1.resources
+D:\Github\DeliveryBase\Server\obj\Debug\Server.Properties.Resources.resources
+D:\Github\DeliveryBase\Server\obj\Debug\Server.csproj.GenerateResource.cache
+D:\Github\DeliveryBase\Server\obj\Debug\Server.csproj.CoreCompileInputs.cache
+D:\Github\DeliveryBase\Server\obj\Debug\Server.exe
+D:\Github\DeliveryBase\Server\obj\Debug\Server.pdb

@@ -1,6 +1,4 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.IO;
 using System.Net.Sockets;
 using TMPro;
@@ -8,7 +6,6 @@ using UnityEngine;
 using UnityEngine.UI;
 using System.Net;
 using System.Text;
-using UnityEditor.Sprites;
 
 
 public class Client : MonoBehaviour
@@ -21,7 +18,8 @@ public class Client : MonoBehaviour
     private NetworkStream stream;
     private StreamWriter writer;
     private StreamReader reader;
-    
+    IPAddress[] addr;
+
     Heartbeat pHeartbeat;
     stAddTrayRes pAddTrayRes;
     
@@ -38,14 +36,25 @@ public class Client : MonoBehaviour
     {
         RecvServerStruct();
     }
-
+    private string GetAddress()
+    {
+        IPHostEntry ipEntry = Dns.GetHostEntry(Dns.GetHostName());
+        addr = ipEntry.AddressList;
+        // for (int i = 0; i < addr.Length; i++)
+        // {
+        //     // 디버깅 해보면 1번이 활성화된 IP이다.
+        //     writeRichTextbox($"IP Address {i}: {addr[i].ToString()} ");
+        // }
+        return addr[1].ToString();
+    }
 
     // 서버 접속
     public void ConnectToServer()
     {
         if (socketReady) return;
 
-        string ip = IpInput.text == "" ? "172.30.1.11": IpInput.text;
+        Debug.Log("현재 IP :" + GetAddress());
+        string ip = IpInput.text == "" ? GetAddress() : IpInput.text;
         int port = PortInput.text == "" ? 7777 : Int32.Parse(PortInput.text);
 
         // 소켓 생성
@@ -108,7 +117,7 @@ public class Client : MonoBehaviour
         Debug.Log($"len : {len}");
         Debug.Log($"protocol : {protocol}");
         Debug.Log($"bcc : {bcc}");
-        Debug.Log($"id : {new string(packet.id)}");
+        Debug.Log($"id : {packet.id[0].ToString()}");
 
         br.Close();
         ms.Close();
@@ -142,7 +151,7 @@ public class Client : MonoBehaviour
         Debug.Log($"len : {pHeartbeat.len}");
         Debug.Log($"protocol : {pHeartbeat.protocol}");
         Debug.Log($"bcc : {pHeartbeat.bcc}");
-        Debug.Log($"id : {new string(pHeartbeat.id)}");
+        Debug.Log($"id : {pHeartbeat.id[0].ToString()}");
 
         bw.Close();
         ms.Close();
