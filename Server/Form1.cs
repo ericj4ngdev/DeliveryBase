@@ -1,18 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Diagnostics;
-using System.Drawing;
 using System.IO;
-using System.Linq;
 using System.Net;
 using System.Net.Sockets;
-using System.Runtime.Remoting.Contexts;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 using System.Windows.Forms;
+
 
 namespace Server
 {
@@ -92,90 +84,46 @@ namespace Server
             }            
         }
 
-        // ===================================== 수신 (버퍼 -> 구조체 ) =================================
-        // 역직렬화(버퍼 -> 구조체)
-        private Heartbeat Recv(byte[] btfuffer)
+        void Recv(byte[] btfuffer)
         {
-            Heartbeat packet = new Heartbeat();
-            packet.id = new char[32]; // id 배열 초기화
-
-            MemoryStream ms = new MemoryStream(btfuffer, false);
-            BinaryReader br = new BinaryReader(ms);
-
             // 직렬화된 데이터에서 멤버변수들을 가져온다. 
-            int len = IPAddress.NetworkToHostOrder(br.ReadInt32());
-            int protocol = IPAddress.NetworkToHostOrder(br.ReadInt32());
-            byte bcc = br.ReadByte();
-            byte[] idBytes = br.ReadBytes(packet.id.Length * 2); // 2바이트씩 읽어옵니다.
-            packet.id = Encoding.Unicode.GetChars(idBytes);
+            Int32 len = BitConverter.ToInt32(btfuffer, 0);
+            Int32 protocol = BitConverter.ToInt32(btfuffer, sizeof(Int32));
+            switch (protocol)
+            {
+                case (Int32)protocolNum.stHeartbeat:
+                    {
+                        Heartbeat pHeartbeat = new Heartbeat();
+                        pHeartbeat.Read(btfuffer);
+                        writeRichTextbox("===== Recv Heartbeat =====");
+                        writeRichTextbox($"len : {pHeartbeat.len}");
+                        writeRichTextbox($"protocol : {protocol}");
+                        writeRichTextbox($"bcc : {pHeartbeat.bcc}");
+                    }
+                    break;
 
-            // 디버깅
-            writeRichTextbox("======= Recv Heartbeat =======");
-            writeRichTextbox($"len : {len}");
-            writeRichTextbox($"protocol : {protocol}");
-            writeRichTextbox($"bcc : {bcc}");
-            writeRichTextbox($"id : {packet.id[0].ToString()}");
+                case (Int32)protocolNum.stAddTrayRes:
+                    {
+                        stAddTrayRes pAddTrayRes = new stAddTrayRes();
+                        pAddTrayRes.Read(btfuffer);
+                        writeRichTextbox("===== Recv AddTrayRes =====");
+                        writeRichTextbox($"len : {pAddTrayRes.len}");
+                        writeRichTextbox($"protocol : {pAddTrayRes.protocol}");
+                        writeRichTextbox($"bcc : {pAddTrayRes.bcc}");
+                        writeRichTextbox($"ret : {pAddTrayRes.ret}");
+                        writeRichTextbox($"id : {pAddTrayRes.id[0]}");
+                        writeRichTextbox($"column : {pAddTrayRes.column}");
+                        writeRichTextbox($"row : {pAddTrayRes.row}");
+                        writeRichTextbox($"height : {pAddTrayRes.height}");
+                    }
+                    break;
 
-            br.Close();
-            ms.Close();
-
-            return packet;
+                default:
+                    break;
+            }
         }
-
-        // ===================================== 송신 (구조체 -> 버퍼) =================================
-        #region HeartBeat 전송
-        public const int BODY_BIND_SIZE = 20 + 20 + 4 + 100;
-
-        // 직렬화
-        byte[] GetBytes_Bind(Heartbeat pHeartbeat)
-        {
-            byte[] btBuffer = new byte[BODY_BIND_SIZE];
-
-            MemoryStream ms = new MemoryStream(btBuffer, true);
-            BinaryWriter bw = new BinaryWriter(ms);
-
-            // packet을 byte화 함
-            bw.Write(IPAddress.HostToNetworkOrder(pHeartbeat.len));
-            bw.Write(IPAddress.HostToNetworkOrder(pHeartbeat.protocol));
-            bw.Write(pHeartbeat.bcc);
-            char[] id = pHeartbeat.id;
-            byte[] idBytes = Encoding.Unicode.GetBytes(id);
-            bw.Write(idBytes);
-
-            // 디버깅
-            writeRichTextbox("======= Send Heartbeat =======");
-            writeRichTextbox($"len : {pHeartbeat.len}");
-            writeRichTextbox($"protocol : {pHeartbeat.protocol}");
-            writeRichTextbox($"bcc : {pHeartbeat.bcc}");
-            writeRichTextbox($"id : {pHeartbeat.id[0].ToString()}");
-
-            bw.Close();
-            ms.Close();
-
-            return btBuffer;
-        }
-
-        void SendHB(byte[] buffer)
-        {
-            if (!tcpClient.Connected) return;
-            
-            stream.Write(buffer, 0, buffer.Length);     // 보내기 write
-            /*// 디버깅
-            Heartbeat pHeartbeat = new Heartbeat();
-
-            Int32 len = pHeartbeat.len;
-            Int32 protocol = pHeartbeat.protocol;
-            byte bcc = pHeartbeat.bcc;
-
-            writeRichTextbox($"len : {len}");
-            writeRichTextbox($"protocol : {protocol}");
-            writeRichTextbox($"bcc : {bcc}");*/
-
-        }
-        #endregion
 
         // =================== Button ===================
-
         // 문자열 뒤쪽에 위치한 null 을 제거한 후에 공백문자를 제거한다.
         private static string ExtendedTrim(string source)
         {
@@ -195,25 +143,41 @@ namespace Server
             // 데이타를 수신창에 표시, 반드시 invoke 사용. 충돌피함.
             richTextBox1.Invoke((MethodInvoker)delegate { richTextBox1.AppendText(str + "\r\n"); });
             // 스크롤을 젤 밑으로.
-            richTextBox1.Invoke((MethodInvoker)delegate { richTextBox1.ScrollToCaret(); });
-        }
+            richTextBox1.Invoke((MethodInvoker)delegate     { richTextBox1.ScrollToCaret(); });
+        }        
 
-        private void button2_Click(object sender, EventArgs e)
+        private void button3_Click(object sender, EventArgs e)
         {
-            string sendData1 = "Heart beat";
-            streamWriter.WriteLine(sendData1); // 문자열 데이터 전송
+            Heartbeat pHeartbeat = new Heartbeat();
+            writeRichTextbox("===== Send Heartbeat =====");
+            writeRichTextbox($"len : {pHeartbeat.len}");
+            writeRichTextbox($"protocol : {pHeartbeat.protocol}");
+            writeRichTextbox($"bcc : {pHeartbeat.bcc}");
+            byte[] buffer = pHeartbeat.Send();
+            stream.Write(buffer, 0, buffer.Length);    // 직렬화된 버퍼를 송신
         }
 
         private void button4_Click(object sender, EventArgs e)
         {
-            Heartbeat pHeartbeat = new Heartbeat();
-            pHeartbeat.id = new char[32]; // id 배열 초기화
-            pHeartbeat.len = 2;
-            pHeartbeat.protocol = 2000;
-            pHeartbeat.bcc = 2;
-            pHeartbeat.id[0] = 'b';
-            byte[] buffer = GetBytes_Bind(pHeartbeat);
-            SendHB(buffer);
+            if(comboBox1.Text == null || comboBox2.Text == null || comboBox3.Text == null) return;
+            stAddTrayReq pAddTrayReq = new stAddTrayReq();
+            pAddTrayReq.id[0] = 'a';
+            
+            pAddTrayReq.column = Int32.Parse(comboBox1.Text);
+            pAddTrayReq.row = Int32.Parse(comboBox2.Text);
+            pAddTrayReq.height = Int32.Parse(comboBox3.Text);
+
+            writeRichTextbox("===== Send AddTrayReq =====");
+            writeRichTextbox($"len : {pAddTrayReq.len}");
+            writeRichTextbox($"protocol : {pAddTrayReq.protocol}");
+            writeRichTextbox($"bcc : {pAddTrayReq.bcc}");
+            writeRichTextbox($"id : {pAddTrayReq.id[0]}");
+            writeRichTextbox($"column : {pAddTrayReq.column}");
+            writeRichTextbox($"row : {pAddTrayReq.row}");
+            writeRichTextbox($"height : {pAddTrayReq.height}");
+
+            byte[] buffer = pAddTrayReq.Send();
+            stream.Write(buffer, 0, buffer.Length);    // 직렬화된 버퍼를 송신
         }
     }
 }

@@ -32,11 +32,31 @@
             this.textBox1 = new System.Windows.Forms.TextBox();
             this.textBox2 = new System.Windows.Forms.TextBox();
             this.richTextBox1 = new System.Windows.Forms.RichTextBox();
-            this.button2 = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.button3 = new System.Windows.Forms.Button();
             this.button4 = new System.Windows.Forms.Button();
+            this.comboBox1 = new System.Windows.Forms.ComboBox();
+            this.label3 = new System.Windows.Forms.Label();
+            this.comboBox2 = new System.Windows.Forms.ComboBox();
+            this.label4 = new System.Windows.Forms.Label();
+            this.comboBox3 = new System.Windows.Forms.ComboBox();
+            this.label5 = new System.Windows.Forms.Label();
+            this.button2 = new System.Windows.Forms.Button();
+            this.button5 = new System.Windows.Forms.Button();
+            this.button6 = new System.Windows.Forms.Button();
+            this.button8 = new System.Windows.Forms.Button();
+            this.button7 = new System.Windows.Forms.Button();
+            this.button9 = new System.Windows.Forms.Button();
+            this.button10 = new System.Windows.Forms.Button();
+            this.label6 = new System.Windows.Forms.Label();
+            this.button11 = new System.Windows.Forms.Button();
+            this.button12 = new System.Windows.Forms.Button();
+            this.button15 = new System.Windows.Forms.Button();
+            this.button16 = new System.Windows.Forms.Button();
+            this.button17 = new System.Windows.Forms.Button();
+            this.button13 = new System.Windows.Forms.Button();
+            this.button14 = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // button1
@@ -69,19 +89,9 @@
             // 
             this.richTextBox1.Location = new System.Drawing.Point(32, 59);
             this.richTextBox1.Name = "richTextBox1";
-            this.richTextBox1.Size = new System.Drawing.Size(215, 217);
+            this.richTextBox1.Size = new System.Drawing.Size(215, 246);
             this.richTextBox1.TabIndex = 3;
             this.richTextBox1.Text = "";
-            // 
-            // button2
-            // 
-            this.button2.Location = new System.Drawing.Point(268, 74);
-            this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(75, 23);
-            this.button2.TabIndex = 4;
-            this.button2.Text = "Send";
-            this.button2.UseVisualStyleBackColor = true;
-            this.button2.Click += new System.EventHandler(this.button2_Click);
             // 
             // label1
             // 
@@ -103,33 +113,306 @@
             // 
             // button3
             // 
-            this.button3.Location = new System.Drawing.Point(268, 113);
+            this.button3.Location = new System.Drawing.Point(349, 30);
             this.button3.Name = "button3";
-            this.button3.Size = new System.Drawing.Size(75, 44);
+            this.button3.Size = new System.Drawing.Size(99, 23);
             this.button3.TabIndex = 7;
             this.button3.Text = "Send Heartbeat";
             this.button3.UseVisualStyleBackColor = true;
+            this.button3.Click += new System.EventHandler(this.button3_Click);
             // 
             // button4
             // 
-            this.button4.Location = new System.Drawing.Point(268, 163);
+            this.button4.Location = new System.Drawing.Point(268, 146);
             this.button4.Name = "button4";
-            this.button4.Size = new System.Drawing.Size(75, 44);
+            this.button4.Size = new System.Drawing.Size(180, 27);
             this.button4.TabIndex = 8;
             this.button4.Text = "Add Tray";
             this.button4.UseVisualStyleBackColor = true;
             this.button4.Click += new System.EventHandler(this.button4_Click);
             // 
+            // comboBox1
+            // 
+            this.comboBox1.FormattingEnabled = true;
+            this.comboBox1.Items.AddRange(new object[] {
+            "0",
+            "1",
+            "2",
+            "3",
+            "4",
+            "5",
+            "6",
+            "7",
+            "8",
+            "9",
+            "10",
+            "11",
+            "12",
+            "13"});
+            this.comboBox1.Location = new System.Drawing.Point(374, 63);
+            this.comboBox1.Name = "comboBox1";
+            this.comboBox1.Size = new System.Drawing.Size(75, 20);
+            this.comboBox1.TabIndex = 11;
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(267, 68);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(69, 12);
+            this.label3.TabIndex = 10;
+            this.label3.Text = "칸(column)";
+            // 
+            // comboBox2
+            // 
+            this.comboBox2.FormattingEnabled = true;
+            this.comboBox2.Items.AddRange(new object[] {
+            "0",
+            "1",
+            "2",
+            "3",
+            "4",
+            "5",
+            "6",
+            "7",
+            "8",
+            "9",
+            "10",
+            "11",
+            "12",
+            "13",
+            "14",
+            "15",
+            "16",
+            "17",
+            "18",
+            "19",
+            "20",
+            "21",
+            "22",
+            "23",
+            "24",
+            "25",
+            "26",
+            "27",
+            "28",
+            "29",
+            "30",
+            "31",
+            "32",
+            "33",
+            "34",
+            "35",
+            "36"});
+            this.comboBox2.Location = new System.Drawing.Point(374, 89);
+            this.comboBox2.Name = "comboBox2";
+            this.comboBox2.Size = new System.Drawing.Size(75, 20);
+            this.comboBox2.TabIndex = 13;
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(267, 94);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(48, 12);
+            this.label4.TabIndex = 12;
+            this.label4.Text = "층(row)";
+            // 
+            // comboBox3
+            // 
+            this.comboBox3.FormattingEnabled = true;
+            this.comboBox3.Items.AddRange(new object[] {
+            "0",
+            "1",
+            "2",
+            "3",
+            "4",
+            "5",
+            "6",
+            "7",
+            "8",
+            "9",
+            "10"});
+            this.comboBox3.Location = new System.Drawing.Point(374, 115);
+            this.comboBox3.Name = "comboBox3";
+            this.comboBox3.Size = new System.Drawing.Size(75, 20);
+            this.comboBox3.TabIndex = 15;
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(267, 120);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(101, 12);
+            this.label5.TabIndex = 14;
+            this.label5.Text = "물건 크기(height)";
+            // 
+            // button2
+            // 
+            this.button2.Location = new System.Drawing.Point(269, 179);
+            this.button2.Name = "button2";
+            this.button2.Size = new System.Drawing.Size(180, 27);
+            this.button2.TabIndex = 16;
+            this.button2.Text = "Delete Tray";
+            this.button2.UseVisualStyleBackColor = true;
+            // 
+            // button5
+            // 
+            this.button5.Location = new System.Drawing.Point(268, 212);
+            this.button5.Name = "button5";
+            this.button5.Size = new System.Drawing.Size(180, 27);
+            this.button5.TabIndex = 17;
+            this.button5.Text = "Delete All Tray";
+            this.button5.UseVisualStyleBackColor = true;
+            // 
+            // button6
+            // 
+            this.button6.Location = new System.Drawing.Point(524, 63);
+            this.button6.Name = "button6";
+            this.button6.Size = new System.Drawing.Size(99, 27);
+            this.button6.TabIndex = 18;
+            this.button6.Text = "HandlerMove";
+            this.button6.UseVisualStyleBackColor = true;
+            // 
+            // button8
+            // 
+            this.button8.Location = new System.Drawing.Point(466, 96);
+            this.button8.Name = "button8";
+            this.button8.Size = new System.Drawing.Size(99, 27);
+            this.button8.TabIndex = 20;
+            this.button8.Text = "Load Tray";
+            this.button8.UseVisualStyleBackColor = true;
+            // 
+            // button7
+            // 
+            this.button7.Location = new System.Drawing.Point(574, 96);
+            this.button7.Name = "button7";
+            this.button7.Size = new System.Drawing.Size(99, 27);
+            this.button7.TabIndex = 21;
+            this.button7.Text = "UnloadTray";
+            this.button7.UseVisualStyleBackColor = true;
+            // 
+            // button9
+            // 
+            this.button9.Location = new System.Drawing.Point(466, 129);
+            this.button9.Name = "button9";
+            this.button9.Size = new System.Drawing.Size(99, 36);
+            this.button9.TabIndex = 22;
+            this.button9.Text = "Enterance Load Tray";
+            this.button9.UseVisualStyleBackColor = true;
+            // 
+            // button10
+            // 
+            this.button10.Location = new System.Drawing.Point(574, 129);
+            this.button10.Name = "button10";
+            this.button10.Size = new System.Drawing.Size(99, 36);
+            this.button10.TabIndex = 23;
+            this.button10.Text = "Enterance Unload Tray";
+            this.button10.UseVisualStyleBackColor = true;
+            // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.Font = new System.Drawing.Font("맑은 고딕", 15F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
+            this.label6.Location = new System.Drawing.Point(519, 25);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(111, 28);
+            this.label6.TabIndex = 24;
+            this.label6.Text = "Simulation";
+            // 
+            // button11
+            // 
+            this.button11.Location = new System.Drawing.Point(466, 171);
+            this.button11.Name = "button11";
+            this.button11.Size = new System.Drawing.Size(99, 36);
+            this.button11.TabIndex = 25;
+            this.button11.Text = "Gate Load Tray";
+            this.button11.UseVisualStyleBackColor = true;
+            // 
+            // button12
+            // 
+            this.button12.Location = new System.Drawing.Point(574, 171);
+            this.button12.Name = "button12";
+            this.button12.Size = new System.Drawing.Size(99, 36);
+            this.button12.TabIndex = 26;
+            this.button12.Text = "Gate Unload Tray";
+            this.button12.UseVisualStyleBackColor = true;
+            // 
+            // button15
+            // 
+            this.button15.Location = new System.Drawing.Point(466, 255);
+            this.button15.Name = "button15";
+            this.button15.Size = new System.Drawing.Size(99, 41);
+            this.button15.TabIndex = 29;
+            this.button15.Text = "Add Gate Parcel";
+            this.button15.UseVisualStyleBackColor = true;
+            // 
+            // button16
+            // 
+            this.button16.Location = new System.Drawing.Point(574, 255);
+            this.button16.Name = "button16";
+            this.button16.Size = new System.Drawing.Size(99, 41);
+            this.button16.TabIndex = 30;
+            this.button16.Text = "Delete Gate Parcel";
+            this.button16.UseVisualStyleBackColor = true;
+            // 
+            // button17
+            // 
+            this.button17.Location = new System.Drawing.Point(466, 213);
+            this.button17.Name = "button17";
+            this.button17.Size = new System.Drawing.Size(99, 36);
+            this.button17.TabIndex = 31;
+            this.button17.Text = "Add Enterance Parcel";
+            this.button17.UseVisualStyleBackColor = true;
+            // 
+            // button13
+            // 
+            this.button13.Location = new System.Drawing.Point(574, 213);
+            this.button13.Name = "button13";
+            this.button13.Size = new System.Drawing.Size(99, 36);
+            this.button13.TabIndex = 32;
+            this.button13.Text = "Delete Enterance Parcel";
+            this.button13.UseVisualStyleBackColor = true;
+            // 
+            // button14
+            // 
+            this.button14.Location = new System.Drawing.Point(269, 245);
+            this.button14.Name = "button14";
+            this.button14.Size = new System.Drawing.Size(179, 27);
+            this.button14.TabIndex = 33;
+            this.button14.Text = "All Tray Check";
+            this.button14.UseVisualStyleBackColor = true;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(373, 327);
+            this.ClientSize = new System.Drawing.Size(685, 332);
+            this.Controls.Add(this.button14);
+            this.Controls.Add(this.button13);
+            this.Controls.Add(this.button17);
+            this.Controls.Add(this.button16);
+            this.Controls.Add(this.button15);
+            this.Controls.Add(this.button12);
+            this.Controls.Add(this.button11);
+            this.Controls.Add(this.label6);
+            this.Controls.Add(this.button10);
+            this.Controls.Add(this.button9);
+            this.Controls.Add(this.button7);
+            this.Controls.Add(this.button8);
+            this.Controls.Add(this.button6);
+            this.Controls.Add(this.button5);
+            this.Controls.Add(this.button2);
+            this.Controls.Add(this.comboBox3);
+            this.Controls.Add(this.label5);
+            this.Controls.Add(this.comboBox2);
+            this.Controls.Add(this.label4);
+            this.Controls.Add(this.comboBox1);
+            this.Controls.Add(this.label3);
             this.Controls.Add(this.button4);
             this.Controls.Add(this.button3);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.label1);
-            this.Controls.Add(this.button2);
             this.Controls.Add(this.richTextBox1);
             this.Controls.Add(this.textBox2);
             this.Controls.Add(this.textBox1);
@@ -148,11 +431,31 @@
         private System.Windows.Forms.TextBox textBox1;
         private System.Windows.Forms.TextBox textBox2;
         private System.Windows.Forms.RichTextBox richTextBox1;
-        private System.Windows.Forms.Button button2;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Button button3;
         private System.Windows.Forms.Button button4;
+        private System.Windows.Forms.ComboBox comboBox1;
+        private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.ComboBox comboBox2;
+        private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.ComboBox comboBox3;
+        private System.Windows.Forms.Label label5;
+        private System.Windows.Forms.Button button2;
+        private System.Windows.Forms.Button button5;
+        private System.Windows.Forms.Button button6;
+        private System.Windows.Forms.Button button8;
+        private System.Windows.Forms.Button button7;
+        private System.Windows.Forms.Button button9;
+        private System.Windows.Forms.Button button10;
+        private System.Windows.Forms.Label label6;
+        private System.Windows.Forms.Button button11;
+        private System.Windows.Forms.Button button12;
+        private System.Windows.Forms.Button button15;
+        private System.Windows.Forms.Button button16;
+        private System.Windows.Forms.Button button17;
+        private System.Windows.Forms.Button button13;
+        private System.Windows.Forms.Button button14;
     }
 }
 
