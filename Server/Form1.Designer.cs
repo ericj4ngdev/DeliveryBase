@@ -123,11 +123,11 @@
             // 
             // button4
             // 
-            this.button4.Location = new System.Drawing.Point(268, 146);
+            this.button4.Location = new System.Drawing.Point(268, 180);
             this.button4.Name = "button4";
             this.button4.Size = new System.Drawing.Size(180, 27);
             this.button4.TabIndex = 8;
-            this.button4.Text = "Add Tray";
+            this.button4.Text = "Delete Tray";
             this.button4.UseVisualStyleBackColor = true;
             this.button4.Click += new System.EventHandler(this.button4_Click);
             // 
@@ -249,12 +249,13 @@
             // 
             // button2
             // 
-            this.button2.Location = new System.Drawing.Point(269, 179);
+            this.button2.Location = new System.Drawing.Point(269, 147);
             this.button2.Name = "button2";
             this.button2.Size = new System.Drawing.Size(180, 27);
             this.button2.TabIndex = 16;
-            this.button2.Text = "Delete Tray";
+            this.button2.Text = "Add Tray";
             this.button2.UseVisualStyleBackColor = true;
+            this.button2.Click += new System.EventHandler(this.button2_Click);
             // 
             // button5
             // 

@@ -105,6 +105,11 @@ public class Client : MonoBehaviour
                     {
                         Heartbeat pHeartbeat = new Heartbeat();
                         pHeartbeat.Read(buffer);
+
+                        Debug.Log("======= Recv stAddTrayReq =======");
+                        Debug.Log($"len : {pHeartbeat.len}");
+                        Debug.Log($"protocol : {pHeartbeat.protocol}");
+                        Debug.Log($"bcc : {pHeartbeat.bcc}");
                     }
                     break;
 
@@ -116,7 +121,7 @@ public class Client : MonoBehaviour
                             stAddTrayRes pAddTrayRes = new stAddTrayRes();
                             pAddTrayReq.Read(buffer);
 
-                            Debug.Log("======= Recv stAddTrayReq =======");
+                            Debug.Log("======= Recv pHeartbeat =======");
                             Debug.Log($"len : {pAddTrayReq.len}");
                             Debug.Log($"protocol : {pAddTrayReq.protocol}");
                             Debug.Log($"bcc : {pAddTrayReq.bcc}");

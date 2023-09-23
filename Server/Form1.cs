@@ -146,6 +146,7 @@ namespace Server
             richTextBox1.Invoke((MethodInvoker)delegate     { richTextBox1.ScrollToCaret(); });
         }        
 
+        // Heartbeat Button
         private void button3_Click(object sender, EventArgs e)
         {
             Heartbeat pHeartbeat = new Heartbeat();
@@ -157,12 +158,13 @@ namespace Server
             stream.Write(buffer, 0, buffer.Length);    // 직렬화된 버퍼를 송신
         }
 
-        private void button4_Click(object sender, EventArgs e)
+        // Add Tray Button
+        private void button2_Click(object sender, EventArgs e)
         {
-            if(comboBox1.Text == null || comboBox2.Text == null || comboBox3.Text == null) return;
+            if (comboBox1.Text == "" || comboBox2.Text == "" || comboBox3.Text == "") return;
             stAddTrayReq pAddTrayReq = new stAddTrayReq();
             pAddTrayReq.id[0] = 'a';
-            
+
             pAddTrayReq.column = Int32.Parse(comboBox1.Text);
             pAddTrayReq.row = Int32.Parse(comboBox2.Text);
             pAddTrayReq.height = Int32.Parse(comboBox3.Text);
@@ -178,6 +180,12 @@ namespace Server
 
             byte[] buffer = pAddTrayReq.Send();
             stream.Write(buffer, 0, buffer.Length);    // 직렬화된 버퍼를 송신
+        }
+
+        // Delete Tray
+        private void button4_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }
