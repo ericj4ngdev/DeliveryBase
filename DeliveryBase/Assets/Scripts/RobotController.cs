@@ -117,7 +117,19 @@ public class RobotController : MonoBehaviour
             StartCoroutine(MoveToHeight(rPork, currentRCabinetHeightIdx, endIdx));
         }
     }
-    
+
+    public void MoveToHeightNum(int whichCabinet, int endIdx)
+    {
+        if (whichCabinet == 1)
+        {
+            StartCoroutine(MoveToHeight(lPork, currentLCabinetHeightIdx, endIdx));
+        }
+        if (whichCabinet == 2)
+        {
+            StartCoroutine(MoveToHeight(rPork, currentRCabinetHeightIdx, endIdx));
+        }
+    }
+
     IEnumerator MoveToRack(int endIdx)
     {
         timer_Rack = 0;

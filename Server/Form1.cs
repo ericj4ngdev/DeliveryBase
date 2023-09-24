@@ -117,7 +117,19 @@ namespace Server
                         writeRichTextbox($"height : {pAddTrayRes.height}");
                     }
                     break;
-
+                case (Int32)protocolNum.stMoveHandlerRes:
+                    {
+                        stMoveHandlerReq stMoveHandlerRes = new stMoveHandlerReq();
+                        stMoveHandlerRes.Read(btfuffer);
+                        writeRichTextbox("===== Recv MoveHandlerRes =====");
+                        writeRichTextbox($"len : {stMoveHandlerRes.len}");
+                        writeRichTextbox($"protocol : {stMoveHandlerRes.protocol}");
+                        writeRichTextbox($"bcc : {stMoveHandlerRes.bcc}");
+                        writeRichTextbox($"height : {stMoveHandlerRes.handler}");
+                        writeRichTextbox($"column : {stMoveHandlerRes.column}");
+                        writeRichTextbox($"row : {stMoveHandlerRes.row}");
+                    }
+                    break;
                 default:
                     break;
             }
@@ -150,12 +162,13 @@ namespace Server
         private void button3_Click(object sender, EventArgs e)
         {
             Heartbeat pHeartbeat = new Heartbeat();
+            byte[] buffer = pHeartbeat.Send();
+            stream.Write(buffer, 0, buffer.Length);    // 직렬화된 버퍼를 송신
+
             writeRichTextbox("===== Send Heartbeat =====");
             writeRichTextbox($"len : {pHeartbeat.len}");
             writeRichTextbox($"protocol : {pHeartbeat.protocol}");
             writeRichTextbox($"bcc : {pHeartbeat.bcc}");
-            byte[] buffer = pHeartbeat.Send();
-            stream.Write(buffer, 0, buffer.Length);    // 직렬화된 버퍼를 송신
         }
 
         // Add Tray Button
@@ -169,6 +182,9 @@ namespace Server
             pAddTrayReq.row = Int32.Parse(comboBox2.Text);
             pAddTrayReq.height = Int32.Parse(comboBox3.Text);
 
+            byte[] buffer = pAddTrayReq.Send();
+            stream.Write(buffer, 0, buffer.Length);    // 직렬화된 버퍼를 송신
+
             writeRichTextbox("===== Send AddTrayReq =====");
             writeRichTextbox($"len : {pAddTrayReq.len}");
             writeRichTextbox($"protocol : {pAddTrayReq.protocol}");
@@ -177,13 +193,68 @@ namespace Server
             writeRichTextbox($"column : {pAddTrayReq.column}");
             writeRichTextbox($"row : {pAddTrayReq.row}");
             writeRichTextbox($"height : {pAddTrayReq.height}");
-
-            byte[] buffer = pAddTrayReq.Send();
-            stream.Write(buffer, 0, buffer.Length);    // 직렬화된 버퍼를 송신
         }
 
         // Delete Tray
         private void button4_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        // Delete All Tray
+        private void button5_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        // HandlerMove
+        private void button6_Click(object sender, EventArgs e)
+        {
+            if (comboBox1.Text == "" || comboBox2.Text == "" || comboBox4.Text == "") return;
+            stMoveHandlerReq pMoveHandlerReq = new stMoveHandlerReq();
+
+            pMoveHandlerReq.handler = Int32.Parse(comboBox4.Text);
+            pMoveHandlerReq.column = Int32.Parse(comboBox1.Text);
+            pMoveHandlerReq.row = Int32.Parse(comboBox2.Text);
+
+            byte[] buffer = pMoveHandlerReq.Send();
+            stream.Write(buffer, 0, buffer.Length);    // 직렬화된 버퍼를 송신
+
+            writeRichTextbox("===== Send MoveHandlerReq =====");
+            writeRichTextbox($"len : {pMoveHandlerReq.len}");
+            writeRichTextbox($"protocol : {pMoveHandlerReq.protocol}");
+            writeRichTextbox($"bcc : {pMoveHandlerReq.bcc}");
+            writeRichTextbox($"handler : {pMoveHandlerReq.handler}");
+            writeRichTextbox($"column : {pMoveHandlerReq.column}");
+            writeRichTextbox($"row : {pMoveHandlerReq.row}");
+        }
+
+        // Load Tray
+        private void button8_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        // UnLoad Tray
+        private void button7_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        // Enterance Load Tray
+        private void button9_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        // Enterance Unload Tray
+        private void button10_Click(object sender, EventArgs e)
+        {
+
+        }        
+
+        // All Tray Check
+        private void button14_Click(object sender, EventArgs e)
         {
 
         }

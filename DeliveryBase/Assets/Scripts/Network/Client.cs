@@ -7,12 +7,13 @@ using UnityEngine.UI;
 using System.Net;
 using System.Text;
 
-
+// 
 public class Client : MonoBehaviour
 {
     public TMP_InputField IpInput;
     public TMP_InputField PortInput;
 
+    public Simulate controller;
     public bool socketReady;
     private TcpClient socket;
     private NetworkStream stream;
@@ -148,7 +149,43 @@ public class Client : MonoBehaviour
                         
                     }
                     break;
+                case (Int32)protocolNum.stMoveHandlerReq:
+                    {
+                        try
+                        {
+                            stMoveHandlerReq pMoveHandlerReq = new stMoveHandlerReq();
+                            stMoveHandlerRes pMoveHandlerRes = new stMoveHandlerRes();
+                            pMoveHandlerReq.Read(buffer);
 
+                            Debug.Log("======= Recv pHeartbeat =======");
+                            Debug.Log($"len : {pMoveHandlerReq.len}");
+                            Debug.Log($"protocol : {pMoveHandlerReq.protocol}");
+                            Debug.Log($"bcc : {pMoveHandlerReq.bcc}");
+                            Debug.Log($"handler : {pMoveHandlerReq.handler}");
+                            Debug.Log($"column : {pMoveHandlerReq.column}");
+                            Debug.Log($"row : {pMoveHandlerReq.row}");
+
+                            // 동기화
+                            pMoveHandlerRes.handler = pMoveHandlerReq.handler;
+                            pMoveHandlerRes.column  = pMoveHandlerReq.column;
+                            pMoveHandlerRes.row     = pMoveHandlerReq.row;
+
+                            controller.Handler = pMoveHandlerReq.handler;
+                            controller.Column = pMoveHandlerReq.column;
+                            controller.Row = pMoveHandlerReq.row;
+                            controller.MoveHandler();
+
+                            byte[] temp = pMoveHandlerRes.Send();      // 직렬화된 버퍼
+                            stream.Write(temp, 0, temp.Length);
+
+                        }                   
+                        catch (Exception exception)
+                        {
+                            // 에러 출력
+                            Debug.Log($"소켓에러 : {exception.Message}");
+                        }
+                    }
+                    break;
                 default:
                     break;
             }
