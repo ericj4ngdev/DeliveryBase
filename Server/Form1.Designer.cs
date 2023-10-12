@@ -224,17 +224,9 @@
             // 
             this.comboBox3.FormattingEnabled = true;
             this.comboBox3.Items.AddRange(new object[] {
-            "0",
             "1",
             "2",
-            "3",
-            "4",
-            "5",
-            "6",
-            "7",
-            "8",
-            "9",
-            "10"});
+            "3"});
             this.comboBox3.Location = new System.Drawing.Point(439, 113);
             this.comboBox3.Name = "comboBox3";
             this.comboBox3.Size = new System.Drawing.Size(75, 20);

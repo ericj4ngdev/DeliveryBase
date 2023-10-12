@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class Percel : MonoBehaviour
 {
+    public float m_size;
     // Start is called before the first frame update
     void Start()
     {

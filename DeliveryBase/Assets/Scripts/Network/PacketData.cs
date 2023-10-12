@@ -523,7 +523,7 @@ public class stDeleteAllTrayRes : Packet
 public class stMoveHandlerReq : Packet
 {
     public Int32 handler;           // 점유량 (기본 1 : 물건이 있을 경우 2 이상의 값)
-    public Int32 column;            // = tray 열 번호
+    public Int32 column;            // tray 열 번호(랙함)
     public Int32 row;               // tray 행 번호
 
     public stMoveHandlerReq()
@@ -586,52 +586,27 @@ public class stMoveHandlerReq : Packet
         return additionalLen;
     }
 }
-
+//
 [Serializable]
 public class stMoveHandlerRes : Packet
 {
-    public Int32 handler;           // 점유량 (기본 1 : 물건이 있을 경우 2 이상의 값)
-    public Int32 column;            // = tray 열 번호
-    public Int32 row;               // tray 행 번호
-
     public stMoveHandlerRes()
     {
         this.protocol = (Int32)protocolNum.stMoveHandlerRes;
         this.bcc = 1;
     }
 
-    public override void Read(byte[] buffer)
+    public override void Read(byte[] btfuffer)
     {
-        int offset = 0;
-
-        // 길이 필드 읽기
-        this.len = BitConverter.ToInt32(buffer, offset);
-        offset += sizeof(Int32);
-
-        // 프로토콜 필드 읽기
-        this.protocol = BitConverter.ToInt32(buffer, offset);
-        offset += sizeof(Int32);
-
-        // BCC 필드 읽기
-        this.bcc = buffer[offset];
-        offset += sizeof(byte);
-
-        // handler 필드 읽기
-        this.handler = BitConverter.ToInt32(buffer, offset);
-        offset += sizeof(Int32);
-
-        // column 필드 읽기
-        this.column = BitConverter.ToInt32(buffer, offset);
-        offset += sizeof(Int32);
-
-        // row 필드 읽기
-        this.row = BitConverter.ToInt32(buffer, offset);
+        Int32 len = BitConverter.ToInt32(btfuffer, 0);
+        Int32 protocol = BitConverter.ToInt32(btfuffer, sizeof(Int32));
+        byte bcc = btfuffer[sizeof(Int32) * 2];
     }
 
     public override byte[] Send()
     {
         // 패킷을 구성할 때 임시 MemoryStream 사용
-        using (MemoryStream ms = new MemoryStream())
+        using (MemoryStream ms = new MemoryStream(sizeof(Int32) * 2 + sizeof(byte)))
         using (BinaryWriter writer = new BinaryWriter(ms))
         {
             CalculateLen();
@@ -639,9 +614,6 @@ public class stMoveHandlerRes : Packet
             writer.Write(this.len);
             writer.Write(this.protocol);
             writer.Write(this.bcc);
-            writer.Write(this.handler);
-            writer.Write(this.column);
-            writer.Write(this.row);
 
             return ms.ToArray();
         }
@@ -649,9 +621,7 @@ public class stMoveHandlerRes : Packet
 
     protected override int CalculateAdditionalLen()
     {
-        // 추가 멤버 변수의 크기를 여기에서 더합니다.
-        int additionalLen = sizeof(Int32) * 3;
-        return additionalLen;
+        return 0;
     }
 }
 

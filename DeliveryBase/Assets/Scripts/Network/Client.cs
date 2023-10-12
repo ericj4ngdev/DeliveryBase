@@ -7,14 +7,15 @@ using UnityEngine.UI;
 using System.Net;
 using System.Text;
 
-// 
+
 public class Client : MonoBehaviour
 {
     public TMP_InputField IpInput;
     public TMP_InputField PortInput;
 
-    public Simulate controller;
-    public bool socketReady;
+    [SerializeField] Simulate simulate;
+    [SerializeField] PlacementManager placementManager;
+    [SerializeField] bool socketReady;
     private TcpClient socket;
     private NetworkStream stream;
     private StreamWriter writer;
@@ -30,6 +31,9 @@ public class Client : MonoBehaviour
         pHeartbeat = new Heartbeat();
         pAddTrayRes = new stAddTrayRes();
         pAddTrayRes.id = new char[32];
+
+        simulate = GetComponent<Simulate>();
+        placementManager = GetComponent<PlacementManager>();
     }
 
     // 업데이트 함수에서 메시지 확인
@@ -91,6 +95,18 @@ public class Client : MonoBehaviour
         stream.Write(buffer, 0, buffer.Length);
     }
 
+    public void SendDeleteTrayRes(stDeleteTrayRes pDeleteTrayRes)
+    {
+        byte[] buffer = pDeleteTrayRes.Send();      // 직렬화된 버퍼
+        stream.Write(buffer, 0, buffer.Length);
+    }
+
+    private void SendDeleteAllTrayRes(stDeleteAllTrayRes stDeleteAllTrayRes)
+    {
+        byte[] buffer = stDeleteAllTrayRes.Send();      // 직렬화된 버퍼
+        stream.Write(buffer, 0, buffer.Length);
+    }
+
     // ================================== 수신 (버퍼 -> 구조체 ) ===============================
     void RecvServerStruct()
     {
@@ -107,13 +123,12 @@ public class Client : MonoBehaviour
                         Heartbeat pHeartbeat = new Heartbeat();
                         pHeartbeat.Read(buffer);
 
-                        Debug.Log("======= Recv stAddTrayReq =======");
+                        Debug.Log("======= Recv pHeartbeat =======");
                         Debug.Log($"len : {pHeartbeat.len}");
                         Debug.Log($"protocol : {pHeartbeat.protocol}");
                         Debug.Log($"bcc : {pHeartbeat.bcc}");
                     }
                     break;
-
                 case (Int32)protocolNum.stAddTrayReq:
                     {
                         try
@@ -122,14 +137,14 @@ public class Client : MonoBehaviour
                             stAddTrayRes pAddTrayRes = new stAddTrayRes();
                             pAddTrayReq.Read(buffer);
 
-                            Debug.Log("======= Recv pHeartbeat =======");
-                            Debug.Log($"len : {pAddTrayReq.len}");
-                            Debug.Log($"protocol : {pAddTrayReq.protocol}");
-                            Debug.Log($"bcc : {pAddTrayReq.bcc}");
-                            Debug.Log($"id : {new string(pAddTrayReq.id)}");
-                            Debug.Log($"row : {pAddTrayReq.row}");
-                            Debug.Log($"column : {pAddTrayReq.column}");
-                            Debug.Log($"height : {pAddTrayReq.height}");
+                            Debug.Log("======= Recv pAddTrayReq =======");
+                            Debug.Log($"len :       {pAddTrayReq.len}");
+                            Debug.Log($"protocol :  {pAddTrayReq.protocol}");
+                            Debug.Log($"bcc :       {pAddTrayReq.bcc}");
+                            Debug.Log($"id :        {new string(pAddTrayReq.id)}");
+                            Debug.Log($"row :       {pAddTrayReq.row}");
+                            Debug.Log($"column :    {pAddTrayReq.column}");
+                            Debug.Log($"height :    {pAddTrayReq.height}");
 
                             // 동기화
                             pAddTrayRes.ret = 0;
@@ -138,7 +153,58 @@ public class Client : MonoBehaviour
                             pAddTrayRes.row = pAddTrayReq.row;
                             pAddTrayRes.height = pAddTrayReq.height;
 
+                            // 동작
+                            placementManager.rect_num = pAddTrayReq.column;
+                            placementManager.rect_height = pAddTrayReq.row;
+                            placementManager.percel_Size = pAddTrayReq.height;
+                            
+                            placementManager.AddTray();
+                            placementManager.SetPercelSizebyServer();
+
                             SendAddTrayRes(pAddTrayRes);     // 응답해서 보내기
+                        }
+                        catch (Exception exception)
+                        {
+                            // 에러 출력
+                            pAddTrayRes.ret = 1;
+                            SendAddTrayRes(pAddTrayRes);     // 응답해서 보내기
+                            Debug.Log($"소켓에러 : {exception.Message}");
+                        }
+
+                    }
+                    break;
+                case (Int32)protocolNum.stAddTrayRes:
+                    break;
+                case (Int32)protocolNum.stDeleteTrayReq:
+                    {
+                        try
+                        {
+                            stDeleteTrayReq pDeleteTrayReq = new stDeleteTrayReq();
+                            stDeleteTrayRes pDeleteTrayRes = new stDeleteTrayRes();
+                            pDeleteTrayReq.Read(buffer);
+
+                            Debug.Log("======= Recv pDeleteTrayReq =======");
+                            Debug.Log($"len :       {pDeleteTrayReq.len}");
+                            Debug.Log($"protocol :  {pDeleteTrayReq.protocol}");
+                            Debug.Log($"bcc :       {pDeleteTrayReq.bcc}");
+                            Debug.Log($"id :        {new string(pDeleteTrayReq.id)}");
+                            Debug.Log($"row :       {pDeleteTrayReq.row}");
+                            Debug.Log($"column :    {pDeleteTrayReq.column}");
+                            Debug.Log($"height :    {pDeleteTrayReq.height}");
+
+                            // 동기화
+                            pDeleteTrayRes.id = pDeleteTrayReq.id;        // ?
+                            pDeleteTrayRes.column = pDeleteTrayReq.column;
+                            pDeleteTrayRes.row = pDeleteTrayReq.row;
+                            pDeleteTrayRes.height = pDeleteTrayReq.height;
+
+                            // 동작
+                            placementManager.rect_num = pDeleteTrayReq.column;
+                            placementManager.rect_height = pDeleteTrayReq.row;
+                            placementManager.percel_Size = pDeleteTrayReq.height;
+                            placementManager.DeleteTray();
+
+                            SendDeleteTrayRes(pDeleteTrayRes);     // 응답해서 보내기
                         }
                         catch (Exception exception)
                         {
@@ -146,8 +212,37 @@ public class Client : MonoBehaviour
                             Debug.Log($"소켓에러 : {exception.Message}");
                             pAddTrayRes.ret = 0;
                         }
-                        
+
                     }
+                    break;
+                case (Int32)protocolNum.stDeleteTrayRes:
+                    break;
+                case (Int32)protocolNum.stDeleteAllTrayReq:
+                    {
+                        try
+                        {
+                            stDeleteAllTrayReq pDeleteAllTrayReq = new stDeleteAllTrayReq();
+                            stDeleteAllTrayRes pDeleteAllTrayRes = new stDeleteAllTrayRes();
+                            pDeleteAllTrayReq.Read(buffer);
+
+                            Debug.Log("======= Recv pDeleteAllTrayReq =======");
+                            Debug.Log($"len :       {pDeleteAllTrayReq.len}");
+                            Debug.Log($"protocol :  {pDeleteAllTrayReq.protocol}");
+                            Debug.Log($"bcc :       {pDeleteAllTrayReq.bcc}");
+
+                            placementManager.DeleteAllTray();
+
+                            SendDeleteAllTrayRes(pDeleteAllTrayRes);     // 응답해서 보내기
+                        }
+                        catch (Exception exception)
+                        {
+                            // 에러 출력
+                            Debug.Log($"소켓에러 : {exception.Message}");
+                            pAddTrayRes.ret = 0;
+                        }
+                    }
+                    break;
+                case (Int32)protocolNum.stDeleteAllTrayRes:
                     break;
                 case (Int32)protocolNum.stMoveHandlerReq:
                     {
@@ -157,7 +252,7 @@ public class Client : MonoBehaviour
                             stMoveHandlerRes pMoveHandlerRes = new stMoveHandlerRes();
                             pMoveHandlerReq.Read(buffer);
 
-                            Debug.Log("======= Recv pHeartbeat =======");
+                            Debug.Log("======= Recv pMoveHandlerReq =======");
                             Debug.Log($"len : {pMoveHandlerReq.len}");
                             Debug.Log($"protocol : {pMoveHandlerReq.protocol}");
                             Debug.Log($"bcc : {pMoveHandlerReq.bcc}");
@@ -166,25 +261,159 @@ public class Client : MonoBehaviour
                             Debug.Log($"row : {pMoveHandlerReq.row}");
 
                             // 동기화
-                            pMoveHandlerRes.handler = pMoveHandlerReq.handler;
-                            pMoveHandlerRes.column  = pMoveHandlerReq.column;
-                            pMoveHandlerRes.row     = pMoveHandlerReq.row;
+                            // pMoveHandlerRes.handler = pMoveHandlerReq.handler;
+                            // pMoveHandlerRes.column = pMoveHandlerReq.column;
+                            // pMoveHandlerRes.row = pMoveHandlerReq.row;
 
-                            controller.Handler = pMoveHandlerReq.handler;
-                            controller.Column = pMoveHandlerReq.column;
-                            controller.Row = pMoveHandlerReq.row;
-                            controller.MoveHandler();
+                            simulate.Handler = pMoveHandlerReq.handler;
+                            simulate.Column = pMoveHandlerReq.column;
+                            simulate.Row = pMoveHandlerReq.row;
+                            simulate.MoveHandler();                     // 구동
 
-                            byte[] temp = pMoveHandlerRes.Send();      // 직렬화된 버퍼
-                            stream.Write(temp, 0, temp.Length);
+                            byte[] temp = pMoveHandlerRes.Send();       // 버퍼 직렬화
+                            stream.Write(temp, 0, temp.Length);         // 직렬화된 버퍼를 송신
 
-                        }                   
+                        }
+                        catch (Exception exception)
+                        {
+                            // 에러 출력
+                            Debug.Log($"소켓에러 : {exception.Message}");
+                        }
+                    }                    
+                    break;
+                case (Int32)protocolNum.stMoveHandlerRes:
+                    break;
+                case (Int32)protocolNum.stMoveHandlerCompleteNotify:
+                    break;
+                case (Int32)protocolNum.stMoveHandlerCompleteRes:
+                    break;
+                case (Int32)protocolNum.stLoadTrayReq:
+                    {
+                        try
+                        {
+                            stLoadTrayReq pLoadTrayReq = new stLoadTrayReq();
+                            stLoadTrayRes pLoadTrayRes = new stLoadTrayRes();
+                            pLoadTrayReq.Read(buffer);
+
+                            Debug.Log("======= Recv pLoadTrayReq =======");
+                            Debug.Log($"len :       {pLoadTrayReq.len}");
+                            Debug.Log($"protocol :  {pLoadTrayReq.protocol}");
+                            Debug.Log($"bcc :       {pLoadTrayReq.bcc}");
+                            Debug.Log($"handler :   {pLoadTrayReq.handler}");
+                            Debug.Log($"column :    {pLoadTrayReq.column}");
+                            Debug.Log($"row :       {pLoadTrayReq.row}");
+
+                            simulate.Handler = pLoadTrayReq.handler;
+                            simulate.Column = pLoadTrayReq.column;
+                            simulate.Row = pLoadTrayReq.row;
+                            simulate.LoadTray();                   // 구동
+
+                            byte[] temp = pLoadTrayRes.Send();       // 버퍼 직렬화
+                            stream.Write(temp, 0, temp.Length);         // 직렬화된 버퍼를 송신
+
+                        }
+                        catch (Exception exception)
+                        {
+                            // 에러 출력
+                            Debug.Log($"소켓에러 : {exception.Message}");
+                        }
+                    }                    
+                    break;
+                case (Int32)protocolNum.stLoadTrayRes:
+                    break;
+                case (Int32)protocolNum.stLoadTrayCompleteNotify:
+                    break;
+                case (Int32)protocolNum.stLoadTrayCompleteRes:
+                    break;
+                case (Int32)protocolNum.stUnloadTrayReq:
+                    {
+                        try
+                        {
+                            stUnloadTrayReq pUnloadTrayReq = new stUnloadTrayReq();
+                            stUnloadTrayRes pUnloadTrayRes = new stUnloadTrayRes();
+                            pUnloadTrayReq.Read(buffer);
+
+                            Debug.Log("======= Recv pUnloadTrayReq =======");
+                            Debug.Log($"len :       {pUnloadTrayReq.len}");
+                            Debug.Log($"protocol :  {pUnloadTrayReq.protocol}");
+                            Debug.Log($"bcc :       {pUnloadTrayReq.bcc}");
+                            Debug.Log($"handler :   {pUnloadTrayReq.handler}");
+                            Debug.Log($"column :    {pUnloadTrayReq.column}");
+                            Debug.Log($"row :       {pUnloadTrayReq.row}");
+
+                            simulate.Handler = pUnloadTrayReq.handler;
+                            simulate.Column = pUnloadTrayReq.column;
+                            simulate.Row = pUnloadTrayReq.row;
+                            simulate.UnloadTray();                   // 구동
+
+                            byte[] temp = pUnloadTrayRes.Send();        // 버퍼 직렬화
+                            stream.Write(temp, 0, temp.Length);         // 직렬화된 버퍼를 송신
+
+                        }
                         catch (Exception exception)
                         {
                             // 에러 출력
                             Debug.Log($"소켓에러 : {exception.Message}");
                         }
                     }
+                    break;
+                case (Int32)protocolNum.stUnloadTrayRes:
+                    break;
+                case (Int32)protocolNum.stUnloadTrayCompleteNotify:
+                    break;
+                case (Int32)protocolNum.stUnloadTrayCompleteRes:
+                    break;
+                case (Int32)protocolNum.stEnteranceLoadTrayReq:
+                    break;
+                case (Int32)protocolNum.stEnteranceLoadTrayRes:
+                    break;
+                case (Int32)protocolNum.stEnteranceLoadTrayCompleteNotify:
+                    break;
+                case (Int32)protocolNum.stEnteranceLoadTrayCompleteRes:
+                    break;
+                case (Int32)protocolNum.stEnteranceUnloadTrayReq:
+                    break;
+                case (Int32)protocolNum.stEnteranceUnloadTrayRes:
+                    break;
+                case (Int32)protocolNum.stEnteranceUnloadTrayCompleteNotify:
+                    break;
+                case (Int32)protocolNum.stEnteranceUnloadTrayCompleteRes:
+                    break;
+                case (Int32)protocolNum.stGateLoadTrayReq:
+                    break;
+                case (Int32)protocolNum.stGateLoadTrayRes:
+                    break;
+                case (Int32)protocolNum.stGateLoadTrayCompleteNotify:
+                    break;
+                case (Int32)protocolNum.stGateLoadTrayCompleteRes:
+                    break;
+                case (Int32)protocolNum.stGateUnloadTrayReq:
+                    break;
+                case (Int32)protocolNum.stGateUnloadTrayRes:
+                    break;
+                case (Int32)protocolNum.stGateUnloadTrayCompleteNotify:
+                    break;
+                case (Int32)protocolNum.stGateUnloadTrayCompleteRes:
+                    break;
+                case (Int32)protocolNum.stAddEnteranceParcelReq:
+                    break;
+                case (Int32)protocolNum.stAddEnteranceParcelRes:
+                    break;
+                case (Int32)protocolNum.stDeleteEnteranceParcelReq:
+                    break;
+                case (Int32)protocolNum.stDeleteEnteranceParcelRes:
+                    break;
+                case (Int32)protocolNum.stAddGateParcelReq:
+                    break;
+                case (Int32)protocolNum.stAddGateParcelRes:
+                    break;
+                case (Int32)protocolNum.stDeleteGateParcelReq:
+                    break;
+                case (Int32)protocolNum.stDeleteGateParcelRes:
+                    break;
+                case (Int32)protocolNum.stAllParcelCheckReq:
+                    break;
+                case (Int32)protocolNum.stAllParcelCheckRes:
                     break;
                 default:
                     break;
@@ -233,4 +462,5 @@ public class Client : MonoBehaviour
         socket.Close();
         socketReady = false;
     }
+    // publicl void fnuc() { }
 }

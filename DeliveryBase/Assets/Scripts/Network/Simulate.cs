@@ -2,11 +2,21 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// 구동부
+/// </summary>
 public class Simulate : MonoBehaviour
 {
-    [SerializeField]
-    private RobotController robotController;
-    private CabinetUIManager cabinetUIManager;
+    
+    [SerializeField] private RobotController robotController;
+    [SerializeField] private CabinetUIManager l_CabinetUIManager;
+    [SerializeField] private CabinetUIManager r_CabinetUIManager;
+    // 서버 제어시 RightCabinetPanel 오브젝트 활성화
+    // 클라(유니티)에서 제어시 시작전 RightCabinetPanel 비활성화
+
+    [SerializeField] private Cabinet l_Cabinet;
+    [SerializeField] private Cabinet r_Cabinet;
+
 
     public int Handler;        // { get; set; }
     public int Column;      // { get; set; }
@@ -39,9 +49,6 @@ public class Simulate : MonoBehaviour
     {
 
     }
-
-    // 점유량
-    // public void SetHei
 
     // 결과 번호 
     public void SetResult()
@@ -76,6 +83,11 @@ public class Simulate : MonoBehaviour
 
             if (Handler == 2)
             {
+                if (Column == 0 && Column == 1 && Column == 1 && Column == 8) 
+                {
+                    Debug.Log("이동 불가");                    
+                    return; 
+                }
                 if (Column >= 8)
                 {
                     robotController.MoveToRackNum(Column - 8);
@@ -87,8 +99,45 @@ public class Simulate : MonoBehaviour
             }
 
             // L/R 캐비넷 정해주기
-            robotController.MoveToHeightNum(Handler, Row);
+            robotController.MoveToHeightNum(Handler, Row + 1);
         }
     }
+
+    public void LoadTray()
+    {
+        // Cabinet의 mRack_Num = simulate.Column
+        // 동기화해서 호출하기
+        switch (Handler)
+        {
+            case 1:
+                l_Cabinet.mRack_Num = Column;
+                l_Cabinet.PutTray();
+                break;
+            case 2:
+                r_Cabinet.mRack_Num = Column;
+                r_Cabinet.PutTray();
+                break;
+            default:
+                break;
+        }
+    }
+
+    public void UnloadTray()
+    {
+        switch (Handler)
+        {
+            case 1:
+                l_Cabinet.mRack_Num = Column;
+                l_Cabinet.GetTray();
+                break;
+            case 2:
+                r_Cabinet.mRack_Num = Column;
+                r_Cabinet.GetTray();
+                break;
+            default:
+                break;
+        }
+    }
+
 
 }

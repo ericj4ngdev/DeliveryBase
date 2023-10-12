@@ -55,12 +55,12 @@ namespace Server
                 
                 byte[] buffer = new byte[256];
 
-                writeRichTextbox("Sever Open");
+                WriteRichTextbox("Sever Open");
                 while (true)
                 {
                     // 클라이언트 접속 확인
                     tcpClient = tcpListener.AcceptTcpClient();
-                    writeRichTextbox("Client Connected");
+                    WriteRichTextbox("Client Connected");
 
                     stream = tcpClient.GetStream();     // 클라와 연결
 
@@ -89,53 +89,138 @@ namespace Server
             // 직렬화된 데이터에서 멤버변수들을 가져온다. 
             Int32 len = BitConverter.ToInt32(btfuffer, 0);
             Int32 protocol = BitConverter.ToInt32(btfuffer, sizeof(Int32));
+            
             switch (protocol)
             {
                 case (Int32)protocolNum.stHeartbeat:
                     {
                         Heartbeat pHeartbeat = new Heartbeat();
                         pHeartbeat.Read(btfuffer);
-                        writeRichTextbox("===== Recv Heartbeat =====");
-                        writeRichTextbox($"len : {pHeartbeat.len}");
-                        writeRichTextbox($"protocol : {protocol}");
-                        writeRichTextbox($"bcc : {pHeartbeat.bcc}");
+                        WriteRichTextbox("===== Recv Heartbeat =====");
+                        WriteRichTextbox($"len : {pHeartbeat.len}");
+                        WriteRichTextbox($"protocol : {protocol}");
+                        WriteRichTextbox($"bcc : {pHeartbeat.bcc}");
                     }
                     break;
-
+                case (Int32)protocolNum.stAddTrayReq:                   
+                    break;
                 case (Int32)protocolNum.stAddTrayRes:
                     {
                         stAddTrayRes pAddTrayRes = new stAddTrayRes();
                         pAddTrayRes.Read(btfuffer);
-                        writeRichTextbox("===== Recv AddTrayRes =====");
-                        writeRichTextbox($"len : {pAddTrayRes.len}");
-                        writeRichTextbox($"protocol : {pAddTrayRes.protocol}");
-                        writeRichTextbox($"bcc : {pAddTrayRes.bcc}");
-                        writeRichTextbox($"ret : {pAddTrayRes.ret}");
-                        writeRichTextbox($"id : {pAddTrayRes.id[0]}");
-                        writeRichTextbox($"column : {pAddTrayRes.column}");
-                        writeRichTextbox($"row : {pAddTrayRes.row}");
-                        writeRichTextbox($"height : {pAddTrayRes.height}");
+                        WriteRichTextbox("===== Recv AddTrayRes =====");
+                        WriteRichTextbox($"len : {pAddTrayRes.len}");
+                        WriteRichTextbox($"protocol : {pAddTrayRes.protocol}");
+                        WriteRichTextbox($"bcc : {pAddTrayRes.bcc}");
+                        WriteRichTextbox($"ret : {pAddTrayRes.ret}");
+                        WriteRichTextbox($"id : {pAddTrayRes.id[0]}");
+                        WriteRichTextbox($"column : {pAddTrayRes.column}");
+                        WriteRichTextbox($"row : {pAddTrayRes.row}");
+                        WriteRichTextbox($"height : {pAddTrayRes.height}");
                     }
+                    break;
+                case (Int32)protocolNum.stDeleteTrayReq:                
+                    break;
+                case (Int32)protocolNum.stDeleteTrayRes:                
+                    break;
+                case (Int32)protocolNum.stDeleteAllTrayReq:             
+                    break;
+                case (Int32)protocolNum.stDeleteAllTrayRes:             
+                    break;
+                case (Int32)protocolNum.stMoveHandlerReq:               
                     break;
                 case (Int32)protocolNum.stMoveHandlerRes:
                     {
                         stMoveHandlerReq stMoveHandlerRes = new stMoveHandlerReq();
                         stMoveHandlerRes.Read(btfuffer);
-                        writeRichTextbox("===== Recv MoveHandlerRes =====");
-                        writeRichTextbox($"len : {stMoveHandlerRes.len}");
-                        writeRichTextbox($"protocol : {stMoveHandlerRes.protocol}");
-                        writeRichTextbox($"bcc : {stMoveHandlerRes.bcc}");
-                        writeRichTextbox($"height : {stMoveHandlerRes.handler}");
-                        writeRichTextbox($"column : {stMoveHandlerRes.column}");
-                        writeRichTextbox($"row : {stMoveHandlerRes.row}");
+                        WriteRichTextbox("===== Recv MoveHandlerRes =====");
+                        WriteRichTextbox($"len : {stMoveHandlerRes.len}");
+                        WriteRichTextbox($"protocol : {stMoveHandlerRes.protocol}");
+                        WriteRichTextbox($"bcc : {stMoveHandlerRes.bcc}");
+                        WriteRichTextbox($"height : {stMoveHandlerRes.handler}");
+                        WriteRichTextbox($"column : {stMoveHandlerRes.column}");
+                        WriteRichTextbox($"row : {stMoveHandlerRes.row}");
                     }
+                    break;
+                case (Int32)protocolNum.stMoveHandlerCompleteNotify:    
+                    break;
+                case (Int32)protocolNum.stMoveHandlerCompleteRes:       
+                    break;
+                case (Int32)protocolNum.stLoadTrayReq:                  
+                    break;
+                case (Int32)protocolNum.stLoadTrayRes:                  
+                    break;
+                case (Int32)protocolNum.stLoadTrayCompleteNotify:       
+                    break;
+                case (Int32)protocolNum.stLoadTrayCompleteRes:          
+                    break;
+                case (Int32)protocolNum.stUnloadTrayReq:                
+                    break;
+                case (Int32)protocolNum.stUnloadTrayRes:                
+                    break;
+                case (Int32)protocolNum.stUnloadTrayCompleteNotify:     
+                    break;
+                case (Int32)protocolNum.stUnloadTrayCompleteRes:        
+                    break;
+                case (Int32)protocolNum.stEnteranceLoadTrayReq:         
+                    break;
+                case (Int32)protocolNum.stEnteranceLoadTrayRes:         
+                    break;
+                case (Int32)protocolNum.stEnteranceLoadTrayCompleteNotify:   
+                    break;
+                case (Int32)protocolNum.stEnteranceLoadTrayCompleteRes:      
+                    break;
+                case (Int32)protocolNum.stEnteranceUnloadTrayReq:            
+                    break;
+                case (Int32)protocolNum.stEnteranceUnloadTrayRes:            
+                    break;
+                case (Int32)protocolNum.stEnteranceUnloadTrayCompleteNotify: 
+                    break;
+                case (Int32)protocolNum.stEnteranceUnloadTrayCompleteRes:    
+                    break;
+                case (Int32)protocolNum.stGateLoadTrayReq:                   
+                    break;
+                case (Int32)protocolNum.stGateLoadTrayRes:                   
+                    break;
+                case (Int32)protocolNum.stGateLoadTrayCompleteNotify:        
+                    break;
+                case (Int32)protocolNum.stGateLoadTrayCompleteRes:           
+                    break;
+                case (Int32)protocolNum.stGateUnloadTrayReq:                 
+                    break;
+                case (Int32)protocolNum.stGateUnloadTrayRes:                 
+                    break;
+                case (Int32)protocolNum.stGateUnloadTrayCompleteNotify:      
+                    break;
+                case (Int32)protocolNum.stGateUnloadTrayCompleteRes:         
+                    break;
+                case (Int32)protocolNum.stAddEnteranceParcelReq:             
+                    break;
+                case (Int32)protocolNum.stAddEnteranceParcelRes:             
+                    break;
+                case (Int32)protocolNum.stDeleteEnteranceParcelReq:          
+                    break;
+                case (Int32)protocolNum.stDeleteEnteranceParcelRes:          
+                    break;
+                case (Int32)protocolNum.stAddGateParcelReq:                  
+                    break;
+                case (Int32)protocolNum.stAddGateParcelRes:                  
+                    break;
+                case (Int32)protocolNum.stDeleteGateParcelReq:               
+                    break;
+                case (Int32)protocolNum.stDeleteGateParcelRes:               
+                    break;
+                case (Int32)protocolNum.stAllParcelCheckReq:                 
+                    break;
+                case (Int32)protocolNum.stAllParcelCheckRes:                 
                     break;
                 default:
                     break;
             }
+
         }
 
-        // =================== Button ===================
+        
         // 문자열 뒤쪽에 위치한 null 을 제거한 후에 공백문자를 제거한다.
         private static string ExtendedTrim(string source)
         {
@@ -150,14 +235,15 @@ namespace Server
         }
 
         // richTextbox1 에 쓰기 함수
-        private void writeRichTextbox(string str)
+        private void WriteRichTextbox(string str)
         {
             // 데이타를 수신창에 표시, 반드시 invoke 사용. 충돌피함.
             richTextBox1.Invoke((MethodInvoker)delegate { richTextBox1.AppendText(str + "\r\n"); });
             // 스크롤을 젤 밑으로.
             richTextBox1.Invoke((MethodInvoker)delegate     { richTextBox1.ScrollToCaret(); });
-        }        
+        }
 
+        // =================== Button (송신부) ===================
         // Heartbeat Button
         private void button3_Click(object sender, EventArgs e)
         {
@@ -165,16 +251,20 @@ namespace Server
             byte[] buffer = pHeartbeat.Send();
             stream.Write(buffer, 0, buffer.Length);    // 직렬화된 버퍼를 송신
 
-            writeRichTextbox("===== Send Heartbeat =====");
-            writeRichTextbox($"len : {pHeartbeat.len}");
-            writeRichTextbox($"protocol : {pHeartbeat.protocol}");
-            writeRichTextbox($"bcc : {pHeartbeat.bcc}");
+            WriteRichTextbox("===== Send Heartbeat =====");
+            WriteRichTextbox($"len :        {pHeartbeat.len}");
+            WriteRichTextbox($"protocol :   {pHeartbeat.protocol}");
+            WriteRichTextbox($"bcc :        {pHeartbeat.bcc}");
         }
 
         // Add Tray Button
         private void button2_Click(object sender, EventArgs e)
         {
-            if (comboBox1.Text == "" || comboBox2.Text == "" || comboBox3.Text == "") return;
+            if (comboBox1.Text == "" || comboBox2.Text == "" || comboBox3.Text == "") 
+            {
+                WriteRichTextbox("column 또는 Row 또는 Height 를 선택하시오.");
+                return; 
+            }
             stAddTrayReq pAddTrayReq = new stAddTrayReq();
             pAddTrayReq.id[0] = 'a';
 
@@ -185,60 +275,121 @@ namespace Server
             byte[] buffer = pAddTrayReq.Send();
             stream.Write(buffer, 0, buffer.Length);    // 직렬화된 버퍼를 송신
 
-            writeRichTextbox("===== Send AddTrayReq =====");
-            writeRichTextbox($"len : {pAddTrayReq.len}");
-            writeRichTextbox($"protocol : {pAddTrayReq.protocol}");
-            writeRichTextbox($"bcc : {pAddTrayReq.bcc}");
-            writeRichTextbox($"id : {pAddTrayReq.id[0]}");
-            writeRichTextbox($"column : {pAddTrayReq.column}");
-            writeRichTextbox($"row : {pAddTrayReq.row}");
-            writeRichTextbox($"height : {pAddTrayReq.height}");
+            WriteRichTextbox("===== Send AddTrayReq =====");
+            WriteRichTextbox($"len :        {pAddTrayReq.len}");
+            WriteRichTextbox($"protocol :   {pAddTrayReq.protocol}");
+            WriteRichTextbox($"bcc :        {pAddTrayReq.bcc}");
+            WriteRichTextbox($"id :         {pAddTrayReq.id[0]}");
+            WriteRichTextbox($"column :     {pAddTrayReq.column}");
+            WriteRichTextbox($"row :        {pAddTrayReq.row}");
+            WriteRichTextbox($"height :     {pAddTrayReq.height}");
         }
 
         // Delete Tray
         private void button4_Click(object sender, EventArgs e)
         {
+            if (comboBox1.Text == "" || comboBox2.Text == "" || comboBox3.Text == "") return;
+            stDeleteTrayReq pDeleteTrayReq = new stDeleteTrayReq();
+            pDeleteTrayReq.id[0] = 'a';
 
+            pDeleteTrayReq.column = Int32.Parse(comboBox1.Text);
+            pDeleteTrayReq.row = Int32.Parse(comboBox2.Text);
+            pDeleteTrayReq.height = Int32.Parse(comboBox3.Text);
+
+            byte[] buffer = pDeleteTrayReq.Send();
+            stream.Write(buffer, 0, buffer.Length);    // 직렬화된 버퍼를 송신
+
+            WriteRichTextbox("===== Send AddTrayReq =====");
+            WriteRichTextbox($"len :        {pDeleteTrayReq.len}");
+            WriteRichTextbox($"protocol :   {pDeleteTrayReq.protocol}");
+            WriteRichTextbox($"bcc :        {pDeleteTrayReq.bcc}");
+            WriteRichTextbox($"id :         {pDeleteTrayReq.id[0]}");
+            WriteRichTextbox($"column :     {pDeleteTrayReq.column}");
+            WriteRichTextbox($"row :        {pDeleteTrayReq.row}");
+            WriteRichTextbox($"height :     {pDeleteTrayReq.height}");
         }
 
         // Delete All Tray
         private void button5_Click(object sender, EventArgs e)
-        {
+        {            
+            stDeleteAllTrayReq pDeleteAllTrayReq = new stDeleteAllTrayReq();
 
+            byte[] buffer = pDeleteAllTrayReq.Send();
+            stream.Write(buffer, 0, buffer.Length);    // 직렬화된 버퍼를 송신
+
+            WriteRichTextbox("===== Send AddTrayReq =====");
+            WriteRichTextbox($"len :        {pDeleteAllTrayReq.len}");
+            WriteRichTextbox($"protocol :   {pDeleteAllTrayReq.protocol}");
+            WriteRichTextbox($"bcc :        {pDeleteAllTrayReq.bcc}");
         }
 
         // HandlerMove
         private void button6_Click(object sender, EventArgs e)
         {
-            if (comboBox1.Text == "" || comboBox2.Text == "" || comboBox4.Text == "") return;
+            // 아무 입력 없으면 아무것도 안함
+            if (comboBox1.Text == "" || comboBox2.Text == "" || comboBox4.Text == "") return;       
             stMoveHandlerReq pMoveHandlerReq = new stMoveHandlerReq();
 
-            pMoveHandlerReq.handler = Int32.Parse(comboBox4.Text);
-            pMoveHandlerReq.column = Int32.Parse(comboBox1.Text);
-            pMoveHandlerReq.row = Int32.Parse(comboBox2.Text);
+            pMoveHandlerReq.handler = Int32.Parse(comboBox4.Text);      // 핸들 종류
+            pMoveHandlerReq.column = Int32.Parse(comboBox1.Text);       // 랙함 번호
+            pMoveHandlerReq.row = Int32.Parse(comboBox2.Text);          // 높이
 
-            byte[] buffer = pMoveHandlerReq.Send();
+            byte[] buffer = pMoveHandlerReq.Send();    // 버퍼 직렬화
             stream.Write(buffer, 0, buffer.Length);    // 직렬화된 버퍼를 송신
 
-            writeRichTextbox("===== Send MoveHandlerReq =====");
-            writeRichTextbox($"len : {pMoveHandlerReq.len}");
-            writeRichTextbox($"protocol : {pMoveHandlerReq.protocol}");
-            writeRichTextbox($"bcc : {pMoveHandlerReq.bcc}");
-            writeRichTextbox($"handler : {pMoveHandlerReq.handler}");
-            writeRichTextbox($"column : {pMoveHandlerReq.column}");
-            writeRichTextbox($"row : {pMoveHandlerReq.row}");
+            WriteRichTextbox("===== Send MoveHandlerReq =====");
+            WriteRichTextbox($"len :        {pMoveHandlerReq.len}");
+            WriteRichTextbox($"protocol :   {pMoveHandlerReq.protocol}");
+            WriteRichTextbox($"bcc :        {pMoveHandlerReq.bcc}");
+            WriteRichTextbox($"handler :    {pMoveHandlerReq.handler}");
+            WriteRichTextbox($"column :     {pMoveHandlerReq.column}");
+            WriteRichTextbox($"row :        {pMoveHandlerReq.row}");
         }
 
         // Load Tray
         private void button8_Click(object sender, EventArgs e)
         {
+            // 아무 입력 없으면 아무것도 안함
+            if (comboBox1.Text == "" || comboBox2.Text == "" || comboBox4.Text == "") return;
+            stLoadTrayReq pLoadTrayReq = new stLoadTrayReq();
 
+            pLoadTrayReq.handler = Int32.Parse(comboBox4.Text);      // 핸들 종류
+            pLoadTrayReq.column = Int32.Parse(comboBox1.Text);       // 랙함 번호
+            pLoadTrayReq.row = Int32.Parse(comboBox2.Text);          // 높이
+
+            byte[] buffer = pLoadTrayReq.Send();    // 버퍼 직렬화
+            stream.Write(buffer, 0, buffer.Length);    // 직렬화된 버퍼를 송신
+
+            WriteRichTextbox("===== Send LoadTrayReq =====");
+            WriteRichTextbox($"len :        {pLoadTrayReq.len}");
+            WriteRichTextbox($"protocol :   {pLoadTrayReq.protocol}");
+            WriteRichTextbox($"bcc :        {pLoadTrayReq.bcc}");
+            WriteRichTextbox($"handler :    {pLoadTrayReq.handler}");
+            WriteRichTextbox($"column :     {pLoadTrayReq.column}");
+            WriteRichTextbox($"row :        {pLoadTrayReq.row}");
         }
 
         // UnLoad Tray
         private void button7_Click(object sender, EventArgs e)
         {
+            // 아무 입력 없으면 아무것도 안함
+            if (comboBox1.Text == "" || comboBox2.Text == "" || comboBox4.Text == "") return;
+            stUnloadTrayReq pUnloadTrayReq = new stUnloadTrayReq();
 
+            pUnloadTrayReq.handler = Int32.Parse(comboBox4.Text);      // 핸들 종류
+            pUnloadTrayReq.column = Int32.Parse(comboBox1.Text);       // 랙함 번호
+            pUnloadTrayReq.row = Int32.Parse(comboBox2.Text);          // 높이
+
+            byte[] buffer = pUnloadTrayReq.Send();    // 버퍼 직렬화
+            stream.Write(buffer, 0, buffer.Length);    // 직렬화된 버퍼를 송신
+
+            WriteRichTextbox("===== Send LoadTrayReq =====");
+            WriteRichTextbox($"len :        {pUnloadTrayReq.len}");
+            WriteRichTextbox($"protocol :   {pUnloadTrayReq.protocol}");
+            WriteRichTextbox($"bcc :        {pUnloadTrayReq.bcc}");
+            WriteRichTextbox($"handler :    {pUnloadTrayReq.handler}");
+            WriteRichTextbox($"column :     {pUnloadTrayReq.column}");
+            WriteRichTextbox($"row :        {pUnloadTrayReq.row}");
         }
 
         // Enterance Load Tray

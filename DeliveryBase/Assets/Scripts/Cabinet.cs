@@ -37,7 +37,7 @@ public class Cabinet : MonoBehaviour
         // 트레이가 있으면 실행하기
         if (hasTray == true)
         {
-            StartCoroutine(co_putTray());
+            StartCoroutine(Co_PutTray());
         }
         else Debug.Log("트레이가 없습니다.");
     }
@@ -46,13 +46,14 @@ public class Cabinet : MonoBehaviour
         // 트레이가 없으면 실행하기
         if (hasTray == false)
         {
-            StartCoroutine(co_getTray());
+            StartCoroutine(Co_GetTray());
         }
         else Debug.Log("트레이가 이미 있습니다.");
     }
 
-    IEnumerator co_putTray()
+    IEnumerator Co_PutTray()
     {
+        // currentIndex 설명
         // 0 : pull
         // 1 : push
         // 2 : Hide
@@ -101,7 +102,7 @@ public class Cabinet : MonoBehaviour
         
     }
     
-    IEnumerator co_getTray()
+    IEnumerator Co_GetTray()
     {
         if (mRack_Num < 5)
         {
