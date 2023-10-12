@@ -6,8 +6,7 @@ using UnityEngine;
 /// 구동부
 /// </summary>
 public class Simulate : MonoBehaviour
-{
-    
+{    
     [SerializeField] private RobotController robotController;
     [SerializeField] private CabinetUIManager l_CabinetUIManager;
     [SerializeField] private CabinetUIManager r_CabinetUIManager;
@@ -97,14 +96,52 @@ public class Simulate : MonoBehaviour
                     robotController.MoveToRackNum(Column - 2);
                 }
             }
-
             // L/R 캐비넷 정해주기
             robotController.MoveToHeightNum(Handler, Row + 1);
         }
     }
 
-    public void LoadTray()
+    public void MoveAndLoadTray()
     {
+        if (Column != -1 && Row != -1)
+        {
+            if (Handler == 1)
+            {
+                if (Column >= 6)
+                {
+                    robotController.MoveToRackNum(Column - 6);
+                }
+                else
+                {
+                    robotController.MoveToRackNum(Column);
+                }
+            }
+
+            if (Handler == 2)
+            {
+                if (Column == 0 && Column == 1 && Column == 1 && Column == 8)
+                {
+                    Debug.Log("이동 불가");
+                    return;
+                }
+                if (Column >= 8)
+                {
+                    robotController.MoveToRackNum(Column - 8);
+                }
+                else
+                {
+                    robotController.MoveToRackNum(Column - 2);
+                }
+            }
+
+            // L/R 캐비넷 정해주기
+            robotController.MoveToHeightNum(Handler, Row + 1);
+        }
+        Invoke("LoadTray", 3.0f);
+    }
+
+    private void LoadTray()
+    {        
         // Cabinet의 mRack_Num = simulate.Column
         // 동기화해서 호출하기
         switch (Handler)
@@ -122,7 +159,46 @@ public class Simulate : MonoBehaviour
         }
     }
 
-    public void UnloadTray()
+    public void MoveAndUnloadTray()
+    {
+        if (Column != -1 && Row != -1)
+        {
+            if (Handler == 1)
+            {
+                if (Column >= 6)
+                {
+                    robotController.MoveToRackNum(Column - 6);
+                }
+                else
+                {
+                    robotController.MoveToRackNum(Column);
+                }
+            }
+
+            if (Handler == 2)
+            {
+                if (Column == 0 && Column == 1 && Column == 1 && Column == 8)
+                {
+                    Debug.Log("이동 불가");
+                    return;
+                }
+                if (Column >= 8)
+                {
+                    robotController.MoveToRackNum(Column - 8);
+                }
+                else
+                {
+                    robotController.MoveToRackNum(Column - 2);
+                }
+            }
+
+            // L/R 캐비넷 정해주기
+            robotController.MoveToHeightNum(Handler, Row + 1);
+        }
+        Invoke("UnloadTray", 3.0f);
+    }
+
+    private void UnloadTray()
     {
         switch (Handler)
         {

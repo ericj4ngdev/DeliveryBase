@@ -41,6 +41,7 @@ public class Cabinet : MonoBehaviour
         }
         else Debug.Log("트레이가 없습니다.");
     }
+
     public void GetTray()
     {
         // 트레이가 없으면 실행하기

@@ -121,25 +121,42 @@ namespace Server
                     break;
                 case (Int32)protocolNum.stDeleteTrayReq:                
                     break;
-                case (Int32)protocolNum.stDeleteTrayRes:                
+                case (Int32)protocolNum.stDeleteTrayRes:
+                    {
+                        stDeleteTrayRes pDeleteTrayRes = new stDeleteTrayRes();
+                        pDeleteTrayRes.Read(btfuffer);
+                        WriteRichTextbox("===== Recv DeleteTrayRes =====");
+                        WriteRichTextbox($"len : {pDeleteTrayRes.len}");
+                        WriteRichTextbox($"protocol : {pDeleteTrayRes.protocol}");
+                        WriteRichTextbox($"bcc : {pDeleteTrayRes.bcc}");
+                        WriteRichTextbox($"id : {pDeleteTrayRes.id[0]}");
+                        WriteRichTextbox($"column : {pDeleteTrayRes.column}");
+                        WriteRichTextbox($"row : {pDeleteTrayRes.row}");
+                        WriteRichTextbox($"height : {pDeleteTrayRes.height}");
+                    }             
                     break;
                 case (Int32)protocolNum.stDeleteAllTrayReq:             
                     break;
-                case (Int32)protocolNum.stDeleteAllTrayRes:             
+                case (Int32)protocolNum.stDeleteAllTrayRes:
+                    {
+                        stDeleteAllTrayRes pDeleteAllTrayRes = new stDeleteAllTrayRes();
+                        pDeleteAllTrayRes.Read(btfuffer);
+                        WriteRichTextbox("===== Recv DeleteAllTrayRes =====");
+                        WriteRichTextbox($"len : {pDeleteAllTrayRes.len}");
+                        WriteRichTextbox($"protocol : {pDeleteAllTrayRes.protocol}");
+                        WriteRichTextbox($"bcc : {pDeleteAllTrayRes.bcc}");
+                    }         
                     break;
                 case (Int32)protocolNum.stMoveHandlerReq:               
                     break;
                 case (Int32)protocolNum.stMoveHandlerRes:
                     {
-                        stMoveHandlerReq stMoveHandlerRes = new stMoveHandlerReq();
-                        stMoveHandlerRes.Read(btfuffer);
+                        stMoveHandlerRes pMoveHandlerRes = new stMoveHandlerRes();
+                        pMoveHandlerRes.Read(btfuffer);
                         WriteRichTextbox("===== Recv MoveHandlerRes =====");
-                        WriteRichTextbox($"len : {stMoveHandlerRes.len}");
-                        WriteRichTextbox($"protocol : {stMoveHandlerRes.protocol}");
-                        WriteRichTextbox($"bcc : {stMoveHandlerRes.bcc}");
-                        WriteRichTextbox($"height : {stMoveHandlerRes.handler}");
-                        WriteRichTextbox($"column : {stMoveHandlerRes.column}");
-                        WriteRichTextbox($"row : {stMoveHandlerRes.row}");
+                        WriteRichTextbox($"len : {pMoveHandlerRes.len}");
+                        WriteRichTextbox($"protocol : {pMoveHandlerRes.protocol}");
+                        WriteRichTextbox($"bcc : {pMoveHandlerRes.bcc}");
                     }
                     break;
                 case (Int32)protocolNum.stMoveHandlerCompleteNotify:    
@@ -148,15 +165,34 @@ namespace Server
                     break;
                 case (Int32)protocolNum.stLoadTrayReq:                  
                     break;
-                case (Int32)protocolNum.stLoadTrayRes:                  
+                case (Int32)protocolNum.stLoadTrayRes:
+                    {
+                        stLoadTrayRes pLoadTrayRes = new stLoadTrayRes();
+                        pLoadTrayRes.Read(btfuffer);
+                        WriteRichTextbox("===== Recv LoadTrayRes =====");
+                        WriteRichTextbox($"len : {pLoadTrayRes.len}");
+                        WriteRichTextbox($"protocol : {pLoadTrayRes.protocol}");
+                        WriteRichTextbox($"bcc : {pLoadTrayRes.bcc}");
+                    }               
                     break;
                 case (Int32)protocolNum.stLoadTrayCompleteNotify:       
                     break;
-                case (Int32)protocolNum.stLoadTrayCompleteRes:          
+                case (Int32)protocolNum.stLoadTrayCompleteRes:
+                    {
+
+                    }          
                     break;
                 case (Int32)protocolNum.stUnloadTrayReq:                
                     break;
-                case (Int32)protocolNum.stUnloadTrayRes:                
+                case (Int32)protocolNum.stUnloadTrayRes:
+                    {
+                        stUnloadTrayRes pUnloadTrayRes = new stUnloadTrayRes();
+                        pUnloadTrayRes.Read(btfuffer);
+                        WriteRichTextbox("===== Recv UnloadTrayRes =====");
+                        WriteRichTextbox($"len : {pUnloadTrayRes.len}");
+                        WriteRichTextbox($"protocol : {pUnloadTrayRes.protocol}");
+                        WriteRichTextbox($"bcc : {pUnloadTrayRes.bcc}");
+                    }
                     break;
                 case (Int32)protocolNum.stUnloadTrayCompleteNotify:     
                     break;
@@ -299,7 +335,7 @@ namespace Server
             byte[] buffer = pDeleteTrayReq.Send();
             stream.Write(buffer, 0, buffer.Length);    // 직렬화된 버퍼를 송신
 
-            WriteRichTextbox("===== Send AddTrayReq =====");
+            WriteRichTextbox("===== Send DeleteTrayReq =====");
             WriteRichTextbox($"len :        {pDeleteTrayReq.len}");
             WriteRichTextbox($"protocol :   {pDeleteTrayReq.protocol}");
             WriteRichTextbox($"bcc :        {pDeleteTrayReq.bcc}");
@@ -317,7 +353,7 @@ namespace Server
             byte[] buffer = pDeleteAllTrayReq.Send();
             stream.Write(buffer, 0, buffer.Length);    // 직렬화된 버퍼를 송신
 
-            WriteRichTextbox("===== Send AddTrayReq =====");
+            WriteRichTextbox("===== Send DeleteAllTrayReq =====");
             WriteRichTextbox($"len :        {pDeleteAllTrayReq.len}");
             WriteRichTextbox($"protocol :   {pDeleteAllTrayReq.protocol}");
             WriteRichTextbox($"bcc :        {pDeleteAllTrayReq.bcc}");
@@ -383,7 +419,7 @@ namespace Server
             byte[] buffer = pUnloadTrayReq.Send();    // 버퍼 직렬화
             stream.Write(buffer, 0, buffer.Length);    // 직렬화된 버퍼를 송신
 
-            WriteRichTextbox("===== Send LoadTrayReq =====");
+            WriteRichTextbox("===== Send UnloadTrayReq =====");
             WriteRichTextbox($"len :        {pUnloadTrayReq.len}");
             WriteRichTextbox($"protocol :   {pUnloadTrayReq.protocol}");
             WriteRichTextbox($"bcc :        {pUnloadTrayReq.bcc}");

@@ -107,6 +107,12 @@ public class Client : MonoBehaviour
         stream.Write(buffer, 0, buffer.Length);
     }
 
+    private void SendPacket(Packet packet)
+    {
+        byte[] buffer = packet.Send();                  // 버퍼 직렬화
+        stream.Write(buffer, 0, buffer.Length);         // 직렬화된 버퍼를 송신
+    }
+
     // ================================== 수신 (버퍼 -> 구조체 ) ===============================
     void RecvServerStruct()
     {
@@ -161,7 +167,7 @@ public class Client : MonoBehaviour
                             placementManager.AddTray();
                             placementManager.SetPercelSizebyServer();
 
-                            SendAddTrayRes(pAddTrayRes);     // 응답해서 보내기
+                            SendPacket(pAddTrayRes);     // 응답해서 보내기
                         }
                         catch (Exception exception)
                         {
@@ -202,9 +208,10 @@ public class Client : MonoBehaviour
                             placementManager.rect_num = pDeleteTrayReq.column;
                             placementManager.rect_height = pDeleteTrayReq.row;
                             placementManager.percel_Size = pDeleteTrayReq.height;
+
                             placementManager.DeleteTray();
 
-                            SendDeleteTrayRes(pDeleteTrayRes);     // 응답해서 보내기
+                            SendPacket(pDeleteTrayRes);     // 응답해서 보내기
                         }
                         catch (Exception exception)
                         {
@@ -212,7 +219,6 @@ public class Client : MonoBehaviour
                             Debug.Log($"소켓에러 : {exception.Message}");
                             pAddTrayRes.ret = 0;
                         }
-
                     }
                     break;
                 case (Int32)protocolNum.stDeleteTrayRes:
@@ -232,7 +238,7 @@ public class Client : MonoBehaviour
 
                             placementManager.DeleteAllTray();
 
-                            SendDeleteAllTrayRes(pDeleteAllTrayRes);     // 응답해서 보내기
+                            SendPacket(pDeleteAllTrayRes);     // 응답해서 보내기
                         }
                         catch (Exception exception)
                         {
@@ -270,9 +276,7 @@ public class Client : MonoBehaviour
                             simulate.Row = pMoveHandlerReq.row;
                             simulate.MoveHandler();                     // 구동
 
-                            byte[] temp = pMoveHandlerRes.Send();       // 버퍼 직렬화
-                            stream.Write(temp, 0, temp.Length);         // 직렬화된 버퍼를 송신
-
+                            SendPacket(pMoveHandlerRes);
                         }
                         catch (Exception exception)
                         {
@@ -306,11 +310,9 @@ public class Client : MonoBehaviour
                             simulate.Handler = pLoadTrayReq.handler;
                             simulate.Column = pLoadTrayReq.column;
                             simulate.Row = pLoadTrayReq.row;
-                            simulate.LoadTray();                   // 구동
+                            simulate.MoveAndLoadTray();                   // 구동
 
-                            byte[] temp = pLoadTrayRes.Send();       // 버퍼 직렬화
-                            stream.Write(temp, 0, temp.Length);         // 직렬화된 버퍼를 송신
-
+                            SendPacket(pLoadTrayRes);
                         }
                         catch (Exception exception)
                         {
@@ -344,11 +346,9 @@ public class Client : MonoBehaviour
                             simulate.Handler = pUnloadTrayReq.handler;
                             simulate.Column = pUnloadTrayReq.column;
                             simulate.Row = pUnloadTrayReq.row;
-                            simulate.UnloadTray();                   // 구동
+                            simulate.MoveAndUnloadTray();                   // 구동
 
-                            byte[] temp = pUnloadTrayRes.Send();        // 버퍼 직렬화
-                            stream.Write(temp, 0, temp.Length);         // 직렬화된 버퍼를 송신
-
+                            SendPacket(pUnloadTrayRes);
                         }
                         catch (Exception exception)
                         {
