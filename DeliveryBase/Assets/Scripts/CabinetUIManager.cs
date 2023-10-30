@@ -91,18 +91,18 @@ public class CabinetUIManager : MonoBehaviour
         int temp;
         switch (mRack_num)
         {
-            case 9:
+            case 8:
                 temp = (int)Mathf.Round(sliders[mRack_num].value * 11) + 1; // temp는 1~12
                 mHeight = Mathf.Clamp(temp, 1, 12) + 26;         // h는 26~38
                 break;
-            case 10:
+            case 9:
                 temp = (int)Mathf.Round(sliders[mRack_num].value * 11) + 1;
                 mHeight = Mathf.Clamp(temp, 1, 12) + 26;
                 break;
-            case 11:
-                temp = (int)Mathf.Round(sliders[mRack_num].value * 4) + 1;  // temp는 1~5
-                mHeight = Mathf.Clamp(temp, 1, 5);
-                break;
+            // case 10:
+            //     temp = (int)Mathf.Round(sliders[mRack_num].value * 4) + 1;  // temp는 1~5
+            //     mHeight = Mathf.Clamp(temp, 1, 5);
+            //     break;
             default:
                 mHeight = (int)Mathf.Round(sliders[mRack_num].value * 37) + 1;
                 mHeight = Mathf.Clamp(mHeight, 1, 38);

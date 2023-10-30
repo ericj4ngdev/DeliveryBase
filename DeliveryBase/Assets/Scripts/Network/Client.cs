@@ -364,6 +364,26 @@ public class Client : MonoBehaviour
                 case (Int32)protocolNum.stUnloadTrayCompleteRes:
                     break;
                 case (Int32)protocolNum.stEnteranceLoadTrayReq:
+                    {
+                        stEnteranceLoadTrayReq pEnteranceLoadTrayReq = new stEnteranceLoadTrayReq();
+                        stEnteranceLoadTrayRes pEnteranceLoadTrayRes = new stEnteranceLoadTrayRes();
+                        pEnteranceLoadTrayReq.Read(buffer);
+
+                        Debug.Log("======= Recv pEnteranceLoadTrayReq =======");
+                        Debug.Log($"len :       {pEnteranceLoadTrayReq.len}");
+                        Debug.Log($"protocol :  {pEnteranceLoadTrayReq.protocol}");
+                        Debug.Log($"bcc :       {pEnteranceLoadTrayReq.bcc}");
+                        Debug.Log($"handler :   {pEnteranceLoadTrayReq.handler}");
+                        Debug.Log($"column :    {pEnteranceLoadTrayReq.column}");
+                        Debug.Log($"row :       {pEnteranceLoadTrayReq.row}");
+
+                        simulate.Handler = pEnteranceLoadTrayReq.handler;
+                        simulate.Column = pEnteranceLoadTrayReq.column;
+                        simulate.Row = pEnteranceLoadTrayReq.row;
+                        simulate.EntranceLoadTray();                   // 구동
+
+                        SendPacket(pEnteranceLoadTrayRes);
+                    }
                     break;
                 case (Int32)protocolNum.stEnteranceLoadTrayRes:
                     break;
@@ -372,6 +392,22 @@ public class Client : MonoBehaviour
                 case (Int32)protocolNum.stEnteranceLoadTrayCompleteRes:
                     break;
                 case (Int32)protocolNum.stEnteranceUnloadTrayReq:
+                    {
+                        stEnteranceUnloadTrayReq pEnteranceUnloadTrayReq = new stEnteranceUnloadTrayReq();
+                        stEnteranceUnloadTrayRes pEnteranceUnloadTrayRes = new stEnteranceUnloadTrayRes();
+                        pEnteranceUnloadTrayReq.Read(buffer);
+
+                        Debug.Log("======= Recv pEnteranceUnloadTrayReq =======");
+                        Debug.Log($"len :       {pEnteranceUnloadTrayReq.len}");
+                        Debug.Log($"protocol :  {pEnteranceUnloadTrayReq.protocol}");
+                        Debug.Log($"bcc :       {pEnteranceUnloadTrayReq.bcc}");
+                        Debug.Log($"handler :   {pEnteranceUnloadTrayReq.handler}");
+
+                        simulate.Handler = pEnteranceUnloadTrayReq.handler;
+                        simulate.EntranceUnloadTray();                   // 구동
+
+                        SendPacket(pEnteranceUnloadTrayRes);
+                    }
                     break;
                 case (Int32)protocolNum.stEnteranceUnloadTrayRes:
                     break;

@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 /// <summary>
 /// 구동부
@@ -20,6 +21,10 @@ public class Simulate : MonoBehaviour
     public int Handler;        // { get; set; }
     public int Column;      // { get; set; }
     public int Row;         // { get; set; }
+
+    private int entranceColumn;
+    private int entranceRow;
+
     public int Height { get; set; }
     public int Result { get; set; }
     // public int Handler { get; set; }
@@ -28,7 +33,8 @@ public class Simulate : MonoBehaviour
 
     private void Start()
     {
-        
+        entranceColumn = 10;
+        entranceRow = 9;
     }
 
     // 왼쪽, 오른쪽 핸들
@@ -60,8 +66,6 @@ public class Simulate : MonoBehaviour
     {
 
     }
-
-    
     
     // 움직임 담당
     public void MoveHandler()
@@ -82,7 +86,7 @@ public class Simulate : MonoBehaviour
 
             if (Handler == 2)
             {
-                if (Column == 0 && Column == 1 && Column == 1 && Column == 8) 
+                if (Column == 0 && Column == 1 && Column == 8) 
                 {
                     Debug.Log("이동 불가");                    
                     return; 
@@ -102,42 +106,15 @@ public class Simulate : MonoBehaviour
     }
 
     public void MoveAndLoadTray()
-    {
-        if (Column != -1 && Row != -1)
-        {
-            if (Handler == 1)
-            {
-                if (Column >= 6)
-                {
-                    robotController.MoveToRackNum(Column - 6);
-                }
-                else
-                {
-                    robotController.MoveToRackNum(Column);
-                }
-            }
-
-            if (Handler == 2)
-            {
-                if (Column == 0 && Column == 1 && Column == 1 && Column == 8)
-                {
-                    Debug.Log("이동 불가");
-                    return;
-                }
-                if (Column >= 8)
-                {
-                    robotController.MoveToRackNum(Column - 8);
-                }
-                else
-                {
-                    robotController.MoveToRackNum(Column - 2);
-                }
-            }
-
-            // L/R 캐비넷 정해주기
-            robotController.MoveToHeightNum(Handler, Row + 1);
-        }
+    {        
+        MoveHandler();
         Invoke("LoadTray", 3.0f);
+    }
+
+    public void MoveAndUnloadTray()
+    {
+        MoveHandler();
+        Invoke("UnloadTray", 3.0f);
     }
 
     private void LoadTray()
@@ -151,52 +128,13 @@ public class Simulate : MonoBehaviour
                 l_Cabinet.PutTray();
                 break;
             case 2:
-                r_Cabinet.mRack_Num = Column;
+                r_Cabinet.mRack_Num = Column - 6;
                 r_Cabinet.PutTray();
                 break;
             default:
                 break;
         }
-    }
-
-    public void MoveAndUnloadTray()
-    {
-        if (Column != -1 && Row != -1)
-        {
-            if (Handler == 1)
-            {
-                if (Column >= 6)
-                {
-                    robotController.MoveToRackNum(Column - 6);
-                }
-                else
-                {
-                    robotController.MoveToRackNum(Column);
-                }
-            }
-
-            if (Handler == 2)
-            {
-                if (Column == 0 && Column == 1 && Column == 1 && Column == 8)
-                {
-                    Debug.Log("이동 불가");
-                    return;
-                }
-                if (Column >= 8)
-                {
-                    robotController.MoveToRackNum(Column - 8);
-                }
-                else
-                {
-                    robotController.MoveToRackNum(Column - 2);
-                }
-            }
-
-            // L/R 캐비넷 정해주기
-            robotController.MoveToHeightNum(Handler, Row + 1);
-        }
-        Invoke("UnloadTray", 3.0f);
-    }
+    }    
 
     private void UnloadTray()
     {
@@ -207,7 +145,7 @@ public class Simulate : MonoBehaviour
                 l_Cabinet.GetTray();
                 break;
             case 2:
-                r_Cabinet.mRack_Num = Column;
+                r_Cabinet.mRack_Num = Column - 6;
                 r_Cabinet.GetTray();
                 break;
             default:
@@ -215,5 +153,30 @@ public class Simulate : MonoBehaviour
         }
     }
 
+    public void EntranceLoadTray()
+    {
+        MoveToEntrance();
+        Invoke("LoadTray", 3.0f);
+    }
+
+    public void EntranceUnloadTray()
+    {
+        MoveToEntrance();
+        Invoke("UnloadTray", 3.0f);
+    }
+
+
+    private void MoveToEntrance()
+    {
+        // Column = 10 고정(이동은 4번 waypoint, 랙함 번호는 10번)
+        // Row = 9 고정
+        Column = entranceColumn;
+        if (Handler == 1) robotController.MoveToRackNum(entranceColumn - 6);
+
+        if (Handler == 2) robotController.MoveToRackNum(entranceColumn - 8);    // 0~4 사이 값
+
+        // L/R 캐비넷 정해주기
+        robotController.MoveToHeightNum(Handler, entranceRow);
+    }
 
 }

@@ -3,7 +3,7 @@ using System.IO;
 
 public enum protocolNum
 {
-    stHeartbeat                         = 1001,
+    stHeartbeat                         = 2001,
     stAddTrayReq                        = 1101,
     stAddTrayRes                        = 1102,
     stDeleteTrayReq                     = 1103,
@@ -112,6 +112,7 @@ public class Heartbeat : Packet
 public class stAddTrayReq : Packet
 {
     public char[] id;               // = tray ID
+    public char[] trackingNum;      // parcel tracking Num
     public Int32 column;            // = tray 열 번호
     public Int32 row;               // tray 행 번호
     public Int32 height;            // 점유량 (기본 1 : 물건이 있을 경우 2 이상의 값)
@@ -121,6 +122,7 @@ public class stAddTrayReq : Packet
         this.protocol = (Int32)protocolNum.stAddTrayReq;
         this.bcc = 1;
         this.id = new char[32];
+        this.trackingNum = new char[32];
     }
 
     public override void Read(byte[] buffer)
@@ -145,6 +147,12 @@ public class stAddTrayReq : Packet
         Buffer.BlockCopy(buffer, offset, this.id, 0, idLength);
         offset += idLength;
 
+        // trackingNum 배열 읽기
+        int trackingNumLength = sizeof(char) * 32;
+        this.trackingNum = new char[trackingNumLength / sizeof(char)];
+        Buffer.BlockCopy(buffer, offset, this.trackingNum, 0, trackingNumLength);
+        offset += trackingNumLength;
+
         // column 필드 읽기
         this.column = BitConverter.ToInt32(buffer, offset);
         offset += sizeof(Int32);
@@ -157,12 +165,14 @@ public class stAddTrayReq : Packet
         this.height = BitConverter.ToInt32(buffer, offset);
     }
 
-
     public override byte[] Send()
     {
         // char[]을 바이트 배열로 변환
         byte[] idBytes = new byte[this.id.Length * sizeof(char)];
         Buffer.BlockCopy(this.id, 0, idBytes, 0, idBytes.Length);
+
+        byte[] trakcingBytes = new byte[this.trackingNum.Length * sizeof(char)];
+        Buffer.BlockCopy(this.trackingNum, 0, trakcingBytes, 0, trakcingBytes.Length);
 
         // 패킷을 구성할 때 임시 MemoryStream 사용
         using (MemoryStream ms = new MemoryStream())
@@ -174,6 +184,7 @@ public class stAddTrayReq : Packet
             writer.Write(this.protocol);
             writer.Write(this.bcc);
             writer.Write(idBytes);
+            writer.Write(trakcingBytes);
             writer.Write(this.column);
             writer.Write(this.row);
             writer.Write(this.height);
@@ -181,10 +192,11 @@ public class stAddTrayReq : Packet
             return ms.ToArray();
         }
     }
+
     protected override int CalculateAdditionalLen()
     {
         // 추가 멤버 변수의 크기를 여기에서 더합니다.
-        int additionalLen = this.id.Length * sizeof(char);
+        int additionalLen = this.id.Length * sizeof(char) + this.trackingNum.Length * sizeof(char);
         additionalLen += sizeof(Int32) * 3; // 다른 Int32 멤버 변수의 크기도 더합니다.
         return additionalLen;
     }
@@ -195,6 +207,7 @@ public class stAddTrayRes : Packet
 {
     public Int32 ret;               //  0 : 성공 , 그외 데이터 실패 코드 (ErrorCode)
     public char[] id;
+    public char[] trackingNum;      // parcel tracking Num (Default = "")
     public Int32 column;            // = tray 열 번호
     public Int32 row;               // tray 행 번호
     public Int32 height;           // 점유량 (기본 1 : 물건이 있을 경우 2 이상의 값)
@@ -204,6 +217,7 @@ public class stAddTrayRes : Packet
         this.protocol = (Int32)protocolNum.stAddTrayRes;
         this.bcc = 1;
         this.id = new char[32];
+        this.trackingNum = new char[32];
     }
 
     public override void Read(byte[] buffer)
@@ -232,6 +246,12 @@ public class stAddTrayRes : Packet
         Buffer.BlockCopy(buffer, offset, this.id, 0, idLength);
         offset += idLength;
 
+        // trackingNum 배열 읽기
+        int trackingNumLength = sizeof(char) * 32;
+        this.trackingNum = new char[trackingNumLength / sizeof(char)];
+        Buffer.BlockCopy(buffer, offset, this.trackingNum, 0, trackingNumLength);
+        offset += trackingNumLength;
+
         // column 필드 읽기
         this.column = BitConverter.ToInt32(buffer, offset);
         offset += sizeof(Int32);
@@ -250,6 +270,9 @@ public class stAddTrayRes : Packet
         byte[] idBytes = new byte[this.id.Length * sizeof(char)];
         Buffer.BlockCopy(this.id, 0, idBytes, 0, idBytes.Length);
 
+        byte[] trakcingBytes = new byte[this.trackingNum.Length * sizeof(char)];
+        Buffer.BlockCopy(this.trackingNum, 0, trakcingBytes, 0, trakcingBytes.Length);
+
         // 패킷을 구성할 때 임시 MemoryStream 사용
         using (MemoryStream ms = new MemoryStream())
         using (BinaryWriter writer = new BinaryWriter(ms))
@@ -261,6 +284,7 @@ public class stAddTrayRes : Packet
             writer.Write(this.bcc);
             writer.Write(this.ret);
             writer.Write(idBytes);
+            writer.Write(trakcingBytes);
             writer.Write(this.column);
             writer.Write(this.row);
             writer.Write(this.height);
@@ -271,7 +295,7 @@ public class stAddTrayRes : Packet
     protected override int CalculateAdditionalLen()
     {
         // 추가 멤버 변수의 크기를 여기에서 더합니다.
-        int additionalLen = this.id.Length * sizeof(char);
+        int additionalLen = this.id.Length * sizeof(char) + this.trackingNum.Length * sizeof(char);
         additionalLen += sizeof(Int32) * 4; // 다른 Int32 멤버 변수의 크기도 더합니다.
         return additionalLen;
     }
@@ -363,6 +387,7 @@ public class stDeleteTrayReq : Packet
 public class stDeleteTrayRes : Packet
 {
     public char[] id;               // = tray ID
+    public char[] trackingNum;      // parcel tracking Num (Default = "")
     public Int32 column;            // = tray 열 번호
     public Int32 row;               // tray 행 번호
     public Int32 height;            // 점유량 (기본 1 : 물건이 있을 경우 2 이상의 값)
@@ -372,6 +397,7 @@ public class stDeleteTrayRes : Packet
         this.protocol = (Int32)protocolNum.stDeleteTrayRes;
         this.bcc = 1;
         this.id = new char[32];
+        this.trackingNum = new char[32];
     }
 
     public override void Read(byte[] buffer)
@@ -396,6 +422,12 @@ public class stDeleteTrayRes : Packet
         Buffer.BlockCopy(buffer, offset, this.id, 0, idLength);
         offset += idLength;
 
+        // trackingNum 배열 읽기
+        int trackingNumLength = sizeof(char) * 32;
+        this.trackingNum = new char[trackingNumLength / sizeof(char)];
+        Buffer.BlockCopy(buffer, offset, this.trackingNum, 0, trackingNumLength);
+        offset += trackingNumLength;
+
         // column 필드 읽기
         this.column = BitConverter.ToInt32(buffer, offset);
         offset += sizeof(Int32);
@@ -415,6 +447,9 @@ public class stDeleteTrayRes : Packet
         byte[] idBytes = new byte[this.id.Length * sizeof(char)];
         Buffer.BlockCopy(this.id, 0, idBytes, 0, idBytes.Length);
 
+        byte[] trakcingBytes = new byte[this.trackingNum.Length * sizeof(char)];
+        Buffer.BlockCopy(this.trackingNum, 0, trakcingBytes, 0, trakcingBytes.Length);
+
         // 패킷을 구성할 때 임시 MemoryStream 사용
         using (MemoryStream ms = new MemoryStream())
         using (BinaryWriter writer = new BinaryWriter(ms))
@@ -425,6 +460,7 @@ public class stDeleteTrayRes : Packet
             writer.Write(this.protocol);
             writer.Write(this.bcc);
             writer.Write(idBytes);
+            writer.Write(trakcingBytes);
             writer.Write(this.column);
             writer.Write(this.row);
             writer.Write(this.height);
@@ -435,7 +471,7 @@ public class stDeleteTrayRes : Packet
     protected override int CalculateAdditionalLen()
     {
         // 추가 멤버 변수의 크기를 여기에서 더합니다.
-        int additionalLen = this.id.Length * sizeof(char);
+        int additionalLen = this.id.Length * sizeof(char) + this.trackingNum.Length * sizeof(char);
         additionalLen += sizeof(Int32) * 3; // 다른 Int32 멤버 변수의 크기도 더합니다.
         return additionalLen;
     }
@@ -750,6 +786,7 @@ public class stMoveHandlerCompleteRes : Packet
 public class stLoadTrayReq : Packet
 {
     public char[] id;               // = tray ID
+    public char[] trackingNum;      // parcel tracking Num
     public Int32 handler;           // 점유량 (기본 1 : 물건이 있을 경우 2 이상의 값)
     public Int32 column;            // = tray 열 번호
     public Int32 row;               // tray 행 번호
@@ -759,6 +796,7 @@ public class stLoadTrayReq : Packet
         this.protocol = (Int32)protocolNum.stLoadTrayReq;
         this.bcc = 1;
         this.id = new char[32];
+        this.trackingNum = new char[32];
     }
 
     public override void Read(byte[] buffer)
@@ -783,6 +821,12 @@ public class stLoadTrayReq : Packet
         Buffer.BlockCopy(buffer, offset, this.id, 0, idLength);
         offset += idLength;
 
+        // trackingNum 배열 읽기
+        int trackingNumLength = sizeof(char) * 32;
+        this.trackingNum = new char[trackingNumLength / sizeof(char)];
+        Buffer.BlockCopy(buffer, offset, this.trackingNum, 0, trackingNumLength);
+        offset += trackingNumLength;
+
         // handler 필드 읽기
         this.handler = BitConverter.ToInt32(buffer, offset);
         offset += sizeof(Int32);
@@ -801,6 +845,9 @@ public class stLoadTrayReq : Packet
         byte[] idBytes = new byte[this.id.Length * sizeof(char)];
         Buffer.BlockCopy(this.id, 0, idBytes, 0, idBytes.Length);
 
+        byte[] trakcingBytes = new byte[this.trackingNum.Length * sizeof(char)];
+        Buffer.BlockCopy(this.trackingNum, 0, trakcingBytes, 0, trakcingBytes.Length);
+
         // 패킷을 구성할 때 임시 MemoryStream 사용
         using (MemoryStream ms = new MemoryStream())
         using (BinaryWriter writer = new BinaryWriter(ms))
@@ -811,6 +858,7 @@ public class stLoadTrayReq : Packet
             writer.Write(this.protocol);
             writer.Write(this.bcc);
             writer.Write(idBytes);
+            writer.Write(trakcingBytes);
             writer.Write(this.handler);
             writer.Write(this.column);
             writer.Write(this.row);
@@ -821,7 +869,7 @@ public class stLoadTrayReq : Packet
     protected override int CalculateAdditionalLen()
     {
         // 추가 멤버 변수의 크기를 여기에서 더합니다.
-        int additionalLen = this.id.Length * sizeof(char);
+        int additionalLen = this.id.Length * sizeof(char) + this.trackingNum.Length * sizeof(char);
         additionalLen += sizeof(Int32) * 3; // 다른 Int32 멤버 변수의 크기도 더합니다.
         return additionalLen;
     }
@@ -879,6 +927,7 @@ public class stLoadTrayCompleteNotify : Packet
 {
     public Int32 result;           // 점유량 (기본 1 : 물건이 있을 경우 2 이상의 값)
     public char[] id;               // = tray ID
+    public char[] trackingNum;      // parcel tracking Num
     public Int32 column;            // = tray 열 번호
     public Int32 row;               // tray 행 번호
 
@@ -887,6 +936,7 @@ public class stLoadTrayCompleteNotify : Packet
         this.protocol = (Int32)protocolNum.stLoadTrayCompleteNotify;
         this.bcc = 1;
         this.id = new char[32];
+        this.trackingNum = new char[32];
     }
 
     public override void Read(byte[] buffer)
@@ -914,6 +964,12 @@ public class stLoadTrayCompleteNotify : Packet
         this.id = new char[idLength / sizeof(char)];
         Buffer.BlockCopy(buffer, offset, this.id, 0, idLength);
         offset += idLength;
+        
+        // trackingNum 배열 읽기
+        int trackingNumLength = sizeof(char) * 32;
+        this.trackingNum = new char[trackingNumLength / sizeof(char)];
+        Buffer.BlockCopy(buffer, offset, this.trackingNum, 0, trackingNumLength);
+        offset += trackingNumLength;
 
         // column 필드 읽기
         this.column = BitConverter.ToInt32(buffer, offset);
@@ -929,6 +985,9 @@ public class stLoadTrayCompleteNotify : Packet
         // char[]을 바이트 배열로 변환
         byte[] idBytes = new byte[this.id.Length * sizeof(char)];
         Buffer.BlockCopy(this.id, 0, idBytes, 0, idBytes.Length);
+        
+        byte[] trakcingBytes = new byte[this.trackingNum.Length * sizeof(char)];
+        Buffer.BlockCopy(this.trackingNum, 0, trakcingBytes, 0, trakcingBytes.Length);
 
         // 패킷을 구성할 때 임시 MemoryStream 사용
         using (MemoryStream ms = new MemoryStream())
@@ -941,6 +1000,7 @@ public class stLoadTrayCompleteNotify : Packet
             writer.Write(this.bcc);
             writer.Write(this.result);
             writer.Write(idBytes);
+            writer.Write(trakcingBytes);
             writer.Write(this.column);
             writer.Write(this.row);
 
@@ -950,7 +1010,7 @@ public class stLoadTrayCompleteNotify : Packet
     protected override int CalculateAdditionalLen()
     {
         // 추가 멤버 변수의 크기를 여기에서 더합니다.
-        int additionalLen = this.id.Length * sizeof(char);
+        int additionalLen = this.id.Length * sizeof(char) + this.trackingNum.Length * sizeof(char);
         additionalLen += sizeof(Int32) * 3; // 다른 Int32 멤버 변수의 크기도 더합니다.
         return additionalLen;
     }
@@ -1007,6 +1067,7 @@ public class stLoadTrayCompleteRes : Packet
 public class stUnloadTrayReq : Packet
 {
     public char[] id;               // = tray ID
+    public char[] trackingNum;      // parcel tracking Num
     public Int32 handler;           // 점유량 (기본 1 : 물건이 있을 경우 2 이상의 값)
     public Int32 column;            // = tray 열 번호
     public Int32 row;               // tray 행 번호
@@ -1016,6 +1077,7 @@ public class stUnloadTrayReq : Packet
         this.protocol = (Int32)protocolNum.stUnloadTrayReq;
         this.bcc = 1;
         this.id = new char[32];
+        this.trackingNum = new char[32];
     }
 
     public override void Read(byte[] buffer)
@@ -1039,6 +1101,12 @@ public class stUnloadTrayReq : Packet
         this.id = new char[idLength / sizeof(char)];
         Buffer.BlockCopy(buffer, offset, this.id, 0, idLength);
         offset += idLength;
+        
+        // trackingNum 배열 읽기
+        int trackingNumLength = sizeof(char) * 32;
+        this.trackingNum = new char[trackingNumLength / sizeof(char)];
+        Buffer.BlockCopy(buffer, offset, this.trackingNum, 0, trackingNumLength);
+        offset += trackingNumLength;
 
         // handler 필드 읽기
         this.handler = BitConverter.ToInt32(buffer, offset);
@@ -1057,6 +1125,8 @@ public class stUnloadTrayReq : Packet
         // char[]을 바이트 배열로 변환
         byte[] idBytes = new byte[this.id.Length * sizeof(char)];
         Buffer.BlockCopy(this.id, 0, idBytes, 0, idBytes.Length);
+        byte[] trakcingBytes = new byte[this.trackingNum.Length * sizeof(char)];
+        Buffer.BlockCopy(this.trackingNum, 0, trakcingBytes, 0, trakcingBytes.Length);
 
         // 패킷을 구성할 때 임시 MemoryStream 사용
         using (MemoryStream ms = new MemoryStream())
@@ -1068,6 +1138,7 @@ public class stUnloadTrayReq : Packet
             writer.Write(this.protocol);
             writer.Write(this.bcc);
             writer.Write(idBytes);
+            writer.Write(trakcingBytes);
             writer.Write(this.handler);
             writer.Write(this.column);
             writer.Write(this.row);
@@ -1078,7 +1149,7 @@ public class stUnloadTrayReq : Packet
     protected override int CalculateAdditionalLen()
     {
         // 추가 멤버 변수의 크기를 여기에서 더합니다.
-        int additionalLen = this.id.Length * sizeof(char);
+        int additionalLen = this.id.Length * sizeof(char) + this.trackingNum.Length * sizeof(char);
         additionalLen += sizeof(Int32) * 3; // 다른 Int32 멤버 변수의 크기도 더합니다.
         return additionalLen;
     }
@@ -1136,6 +1207,7 @@ public class stUnloadTrayCompleteNotify : Packet
 {
     public Int32 result;           // 점유량 (기본 1 : 물건이 있을 경우 2 이상의 값)
     public char[] id;               // = tray ID
+    public char[] trackingNum;      // parcel tracking Num
     public Int32 column;            // = tray 열 번호
     public Int32 row;               // tray 행 번호
 
@@ -1144,6 +1216,7 @@ public class stUnloadTrayCompleteNotify : Packet
         this.protocol = (Int32)protocolNum.stUnloadTrayCompleteNotify;
         this.bcc = 1;
         this.id = new char[32];
+        this.trackingNum = new char[32];
     }
 
     public override void Read(byte[] buffer)
@@ -1172,6 +1245,12 @@ public class stUnloadTrayCompleteNotify : Packet
         Buffer.BlockCopy(buffer, offset, this.id, 0, idLength);
         offset += idLength;
 
+        // trackingNum 배열 읽기
+        int trackingNumLength = sizeof(char) * 32;
+        this.trackingNum = new char[trackingNumLength / sizeof(char)];
+        Buffer.BlockCopy(buffer, offset, this.trackingNum, 0, trackingNumLength);
+        offset += trackingNumLength;
+
         // column 필드 읽기
         this.column = BitConverter.ToInt32(buffer, offset);
         offset += sizeof(Int32);
@@ -1186,6 +1265,8 @@ public class stUnloadTrayCompleteNotify : Packet
         // char[]을 바이트 배열로 변환
         byte[] idBytes = new byte[this.id.Length * sizeof(char)];
         Buffer.BlockCopy(this.id, 0, idBytes, 0, idBytes.Length);
+        byte[] trakcingBytes = new byte[this.trackingNum.Length * sizeof(char)];
+        Buffer.BlockCopy(this.trackingNum, 0, trakcingBytes, 0, trakcingBytes.Length);
 
         // 패킷을 구성할 때 임시 MemoryStream 사용
         using (MemoryStream ms = new MemoryStream())
@@ -1198,6 +1279,7 @@ public class stUnloadTrayCompleteNotify : Packet
             writer.Write(this.bcc);
             writer.Write(this.result);
             writer.Write(idBytes);
+            writer.Write(trakcingBytes);
             writer.Write(this.column);
             writer.Write(this.row);
 
@@ -1207,7 +1289,7 @@ public class stUnloadTrayCompleteNotify : Packet
     protected override int CalculateAdditionalLen()
     {
         // 추가 멤버 변수의 크기를 여기에서 더합니다.
-        int additionalLen = this.id.Length * sizeof(char);
+        int additionalLen = this.id.Length * sizeof(char) + this.trackingNum.Length * sizeof(char);
         additionalLen += sizeof(Int32) * 3; // 다른 Int32 멤버 변수의 크기도 더합니다.
         return additionalLen;
     }
@@ -1263,9 +1345,10 @@ public class stUnloadTrayCompleteRes : Packet
 [Serializable]
 public class stEnteranceLoadTrayReq : Packet
 {
-    public char[] id;               // = tray ID
+    public char[] id;               // tray ID
+    public char[] trackingNum;      // parcel tracking Num
     public Int32 handler;           // 점유량 (기본 1 : 물건이 있을 경우 2 이상의 값)
-    public Int32 column;            // = tray 열 번호
+    public Int32 column;            // tray 열 번호
     public Int32 row;               // tray 행 번호
 
     public stEnteranceLoadTrayReq()
@@ -1273,6 +1356,9 @@ public class stEnteranceLoadTrayReq : Packet
         this.protocol = (Int32)protocolNum.stEnteranceLoadTrayReq;
         this.bcc = 1;
         this.id = new char[32];
+        this.trackingNum = new char[32];
+        this.column = 10;
+        this.row = 9;
     }
 
     public override void Read(byte[] buffer)
@@ -1297,6 +1383,12 @@ public class stEnteranceLoadTrayReq : Packet
         Buffer.BlockCopy(buffer, offset, this.id, 0, idLength);
         offset += idLength;
 
+        // trackingNum 배열 읽기
+        int trackingNumLength = sizeof(char) * 32;
+        this.trackingNum = new char[trackingNumLength / sizeof(char)];
+        Buffer.BlockCopy(buffer, offset, this.trackingNum, 0, trackingNumLength);
+        offset += trackingNumLength;
+
         // handler 필드 읽기
         this.handler = BitConverter.ToInt32(buffer, offset);
         offset += sizeof(Int32);
@@ -1314,6 +1406,8 @@ public class stEnteranceLoadTrayReq : Packet
         // char[]을 바이트 배열로 변환
         byte[] idBytes = new byte[this.id.Length * sizeof(char)];
         Buffer.BlockCopy(this.id, 0, idBytes, 0, idBytes.Length);
+        byte[] trakcingBytes = new byte[this.trackingNum.Length * sizeof(char)];
+        Buffer.BlockCopy(this.trackingNum, 0, trakcingBytes, 0, trakcingBytes.Length);
 
         // 패킷을 구성할 때 임시 MemoryStream 사용
         using (MemoryStream ms = new MemoryStream())
@@ -1325,6 +1419,7 @@ public class stEnteranceLoadTrayReq : Packet
             writer.Write(this.protocol);
             writer.Write(this.bcc);
             writer.Write(idBytes);
+            writer.Write(trakcingBytes);
             writer.Write(this.handler);
             writer.Write(this.column);
             writer.Write(this.row);
@@ -1335,7 +1430,7 @@ public class stEnteranceLoadTrayReq : Packet
     protected override int CalculateAdditionalLen()
     {
         // 추가 멤버 변수의 크기를 여기에서 더합니다.
-        int additionalLen = this.id.Length * sizeof(char);
+        int additionalLen = this.id.Length * sizeof(char) + this.trackingNum.Length * sizeof(char);
         additionalLen += sizeof(Int32) * 3; // 다른 Int32 멤버 변수의 크기도 더합니다.
         return additionalLen;
     }
@@ -1393,6 +1488,7 @@ public class stEnteranceLoadTrayCompleteNotify : Packet
 {
     public Int32 result;            // 0:성공, 그외 ErrorCode
     public char[] id;               // = tray ID
+    public char[] trackingNum;      // parcel tracking Num
     public Int32 handler;           // 점유량 (기본 1 : 물건이 있을 경우 2 이상의 값)
 
     public stEnteranceLoadTrayCompleteNotify()
@@ -1400,6 +1496,7 @@ public class stEnteranceLoadTrayCompleteNotify : Packet
         this.protocol = (Int32)protocolNum.stEnteranceLoadTrayCompleteNotify;
         this.bcc = 1;
         this.id = new char[32];
+        this.trackingNum = new char[32];
     }
 
     public override void Read(byte[] buffer)
@@ -1427,6 +1524,12 @@ public class stEnteranceLoadTrayCompleteNotify : Packet
         this.id = new char[idLength / sizeof(char)];
         Buffer.BlockCopy(buffer, offset, this.id, 0, idLength);
         offset += idLength;
+
+        // trackingNum 배열 읽기
+        int trackingNumLength = sizeof(char) * 32;
+        this.trackingNum = new char[trackingNumLength / sizeof(char)];
+        Buffer.BlockCopy(buffer, offset, this.trackingNum, 0, trackingNumLength);
+        offset += trackingNumLength;
 
         // handler 필드 읽기
         this.handler = BitConverter.ToInt32(buffer, offset);
@@ -1515,12 +1618,14 @@ public class stEnteranceUnloadTrayReq : Packet
 {
     public Int32 handler;           // 점유량 (기본 1 : 물건이 있을 경우 2 이상의 값)
     public char[] id;               // = tray ID
+    public char[] trackingNum;      // parcel tracking Num
 
     public stEnteranceUnloadTrayReq()
     {
         this.protocol = (Int32)protocolNum.stEnteranceUnloadTrayReq;
         this.bcc = 1;
         this.id = new char[32];
+        this.trackingNum = new char[32];
     }
 
     public override void Read(byte[] buffer)
@@ -1545,6 +1650,12 @@ public class stEnteranceUnloadTrayReq : Packet
         Buffer.BlockCopy(buffer, offset, this.id, 0, idLength);
         offset += idLength;
 
+        // trackingNum 배열 읽기
+        int trackingNumLength = sizeof(char) * 32;
+        this.trackingNum = new char[trackingNumLength / sizeof(char)];
+        Buffer.BlockCopy(buffer, offset, this.trackingNum, 0, trackingNumLength);
+        offset += trackingNumLength;
+
         // handler 필드 읽기
         this.handler = BitConverter.ToInt32(buffer, offset);
     }
@@ -1554,6 +1665,8 @@ public class stEnteranceUnloadTrayReq : Packet
         // char[]을 바이트 배열로 변환
         byte[] idBytes = new byte[this.id.Length * sizeof(char)];
         Buffer.BlockCopy(this.id, 0, idBytes, 0, idBytes.Length);
+        byte[] trakcingBytes = new byte[this.trackingNum.Length * sizeof(char)];
+        Buffer.BlockCopy(this.trackingNum, 0, trakcingBytes, 0, trakcingBytes.Length);
 
         // 패킷을 구성할 때 임시 MemoryStream 사용
         using (MemoryStream ms = new MemoryStream())
@@ -1565,6 +1678,7 @@ public class stEnteranceUnloadTrayReq : Packet
             writer.Write(this.protocol);
             writer.Write(this.bcc);
             writer.Write(idBytes);
+            writer.Write(trakcingBytes);
             writer.Write(this.handler);
 
             return ms.ToArray();
@@ -1573,7 +1687,7 @@ public class stEnteranceUnloadTrayReq : Packet
     protected override int CalculateAdditionalLen()
     {
         // 추가 멤버 변수의 크기를 여기에서 더합니다.
-        int additionalLen = this.id.Length * sizeof(char);
+        int additionalLen = this.id.Length * sizeof(char) + this.trackingNum.Length * sizeof(char);
         additionalLen += sizeof(Int32); // 다른 Int32 멤버 변수의 크기도 더합니다.
         return additionalLen;
     }
@@ -1631,6 +1745,7 @@ public class stEnteranceUnloadTrayCompleteNotify : Packet
 {
     public Int32 result;            // 0:성공, 그외 ErrorCode
     public char[] id;               // = tray ID
+    public char[] trackingNum;      // parcel tracking Num
     public Int32 handler;           // 점유량 (기본 1 : 물건이 있을 경우 2 이상의 값)
 
     public stEnteranceUnloadTrayCompleteNotify()
@@ -1638,6 +1753,7 @@ public class stEnteranceUnloadTrayCompleteNotify : Packet
         this.protocol = (Int32)protocolNum.stEnteranceUnloadTrayCompleteNotify;
         this.bcc = 1;
         this.id = new char[32];
+        this.trackingNum = new char[32];
     }
 
     public override void Read(byte[] buffer)
@@ -1666,6 +1782,12 @@ public class stEnteranceUnloadTrayCompleteNotify : Packet
         Buffer.BlockCopy(buffer, offset, this.id, 0, idLength);
         offset += idLength;
 
+        // trackingNum 배열 읽기
+        int trackingNumLength = sizeof(char) * 32;
+        this.trackingNum = new char[trackingNumLength / sizeof(char)];
+        Buffer.BlockCopy(buffer, offset, this.trackingNum, 0, trackingNumLength);
+        offset += trackingNumLength;
+
         // handler 필드 읽기
         this.handler = BitConverter.ToInt32(buffer, offset);
     }
@@ -1675,6 +1797,8 @@ public class stEnteranceUnloadTrayCompleteNotify : Packet
         // char[]을 바이트 배열로 변환
         byte[] idBytes = new byte[this.id.Length * sizeof(char)];
         Buffer.BlockCopy(this.id, 0, idBytes, 0, idBytes.Length);
+        byte[] trakcingBytes = new byte[this.trackingNum.Length * sizeof(char)];
+        Buffer.BlockCopy(this.trackingNum, 0, trakcingBytes, 0, trakcingBytes.Length);
 
         // 패킷을 구성할 때 임시 MemoryStream 사용
         using (MemoryStream ms = new MemoryStream())
@@ -1687,6 +1811,7 @@ public class stEnteranceUnloadTrayCompleteNotify : Packet
             writer.Write(this.bcc);
             writer.Write(this.result);
             writer.Write(idBytes);
+            writer.Write(trakcingBytes);
             writer.Write(this.handler);
 
             return ms.ToArray();
@@ -1695,7 +1820,7 @@ public class stEnteranceUnloadTrayCompleteNotify : Packet
     protected override int CalculateAdditionalLen()
     {
         // 추가 멤버 변수의 크기를 여기에서 더합니다.
-        int additionalLen = this.id.Length * sizeof(char);
+        int additionalLen = this.id.Length * sizeof(char) + this.trackingNum.Length * sizeof(char);
         additionalLen += sizeof(Int32) * 2; // 다른 Int32 멤버 변수의 크기도 더합니다.
         return additionalLen;
     }
@@ -1748,6 +1873,7 @@ public class stEnteranceUnloadTrayCompleteRes : Packet
     }
 }
 
+// ===================== 삭제 =========================
 [Serializable]
 public class stGateLoadTrayReq : Packet
 {
@@ -2272,17 +2398,21 @@ public class stGateUnloadTrayCompleteRes : Packet
     }
 }
 
+// ===========================================================
+
 [Serializable]
 public class stAddEnteranceParcelReq : Packet
 {
     public Int32 column;            // 14(고정)
     public Int32 row;               // 0 (고정)
     public Int32 height;            // row 점유량
+    public char[] trackingNum;      // parcel tracking Num
 
     public stAddEnteranceParcelReq()
     {
         this.protocol = (Int32)protocolNum.stAddEnteranceParcelReq;
         this.bcc = 1;
+        this.trackingNum = new char[32];
     }
 
     public override void Read(byte[] buffer)
@@ -2311,10 +2441,19 @@ public class stAddEnteranceParcelReq : Packet
 
         // height 필드 읽기
         this.height = BitConverter.ToInt32(buffer, offset);
+        offset += sizeof(Int32);
+
+        // trackingNum 배열 읽기
+        int trackingNumLength = sizeof(char) * 32;
+        this.trackingNum = new char[trackingNumLength / sizeof(char)];
+        Buffer.BlockCopy(buffer, offset, this.trackingNum, 0, trackingNumLength);        
     }
 
     public override byte[] Send()
     {
+        byte[] trakcingBytes = new byte[this.trackingNum.Length * sizeof(char)];
+        Buffer.BlockCopy(this.trackingNum, 0, trakcingBytes, 0, trakcingBytes.Length);
+
         // 패킷을 구성할 때 임시 MemoryStream 사용
         using (MemoryStream ms = new MemoryStream())
         using (BinaryWriter writer = new BinaryWriter(ms))
@@ -2327,6 +2466,7 @@ public class stAddEnteranceParcelReq : Packet
             writer.Write(this.column);
             writer.Write(this.row);
             writer.Write(this.height);
+            writer.Write(trakcingBytes);
 
             return ms.ToArray();
         }
@@ -2335,7 +2475,8 @@ public class stAddEnteranceParcelReq : Packet
     protected override int CalculateAdditionalLen()
     {
         // 추가 멤버 변수의 크기를 여기에서 더합니다.
-        int additionalLen = sizeof(Int32) * 3;
+        int additionalLen = this.trackingNum.Length * sizeof(char);
+        additionalLen += sizeof(Int32) * 3;
         return additionalLen;
     }
 }
@@ -2345,6 +2486,7 @@ public class stAddEnteranceParcelRes : Packet
 {
     public Int32 result;            // 0:성공, 그외 ErrorCode
     public char[] id;               // = tray ID
+    public char[] trackingNum;      // parcel tracking Num
     public Int32 column;            // 14 (Gate Index : 고정)
     public Int32 row;               // 0 고정
     public Int32 height;           // row 점유량
@@ -2354,6 +2496,7 @@ public class stAddEnteranceParcelRes : Packet
         this.protocol = (Int32)protocolNum.stAddEnteranceParcelRes;
         this.bcc = 1;
         this.id = new char[32];
+        this.trackingNum = new char[32];
     }
 
     public override void Read(byte[] buffer)
@@ -2381,6 +2524,12 @@ public class stAddEnteranceParcelRes : Packet
         this.id = new char[idLength / sizeof(char)];
         Buffer.BlockCopy(buffer, offset, this.id, 0, idLength);
         offset += idLength;
+
+        // trackingNum 배열 읽기
+        int trackingNumLength = sizeof(char) * 32;
+        this.trackingNum = new char[trackingNumLength / sizeof(char)];
+        Buffer.BlockCopy(buffer, offset, this.trackingNum, 0, trackingNumLength);
+        offset += trackingNumLength;
 
         // column 필드 읽기
         this.column = BitConverter.ToInt32(buffer, offset);
@@ -2399,6 +2548,8 @@ public class stAddEnteranceParcelRes : Packet
         // char[]을 바이트 배열로 변환
         byte[] idBytes = new byte[this.id.Length * sizeof(char)];
         Buffer.BlockCopy(this.id, 0, idBytes, 0, idBytes.Length);
+        byte[] trakcingBytes = new byte[this.trackingNum.Length * sizeof(char)];
+        Buffer.BlockCopy(this.trackingNum, 0, trakcingBytes, 0, trakcingBytes.Length);
 
         // 패킷을 구성할 때 임시 MemoryStream 사용
         using (MemoryStream ms = new MemoryStream())
@@ -2411,6 +2562,7 @@ public class stAddEnteranceParcelRes : Packet
             writer.Write(this.bcc);
             writer.Write(this.result);
             writer.Write(idBytes);
+            writer.Write(trakcingBytes);
             writer.Write(this.column);
             writer.Write(this.row);
             writer.Write(this.height);
@@ -2421,7 +2573,7 @@ public class stAddEnteranceParcelRes : Packet
     protected override int CalculateAdditionalLen()
     {
         // 추가 멤버 변수의 크기를 여기에서 더합니다.
-        int additionalLen = this.id.Length * sizeof(char);
+        int additionalLen = this.id.Length * sizeof(char) + this.trackingNum.Length * sizeof(char);
         additionalLen += sizeof(Int32) * 4; // 다른 Int32 멤버 변수의 크기도 더합니다.
         return additionalLen;
     }
@@ -2432,12 +2584,14 @@ public class stDeleteEnteranceParcelReq : Packet
 {
     public Int32 column;            // 14(고정)
     public Int32 row;               // 0 (고정)
+    public char[] trackingNum;      // parcel tracking Num
     public Int32 height;            // row 점유량
 
     public stDeleteEnteranceParcelReq()
     {
         this.protocol = (Int32)protocolNum.stDeleteEnteranceParcelReq;
         this.bcc = 1;
+        this.trackingNum = new char[32];
     }
 
     public override void Read(byte[] buffer)
@@ -2464,12 +2618,21 @@ public class stDeleteEnteranceParcelReq : Packet
         this.row = BitConverter.ToInt32(buffer, offset);
         offset += sizeof(Int32);
 
+        // trackingNum 배열 읽기
+        int trackingNumLength = sizeof(char) * 32;
+        this.trackingNum = new char[trackingNumLength / sizeof(char)];
+        Buffer.BlockCopy(buffer, offset, this.trackingNum, 0, trackingNumLength);
+        offset += trackingNumLength;
+
         // height 필드 읽기
         this.height = BitConverter.ToInt32(buffer, offset);
     }
 
     public override byte[] Send()
     {
+        byte[] trakcingBytes = new byte[this.trackingNum.Length * sizeof(char)];
+        Buffer.BlockCopy(this.trackingNum, 0, trakcingBytes, 0, trakcingBytes.Length);
+
         // 패킷을 구성할 때 임시 MemoryStream 사용
         using (MemoryStream ms = new MemoryStream())
         using (BinaryWriter writer = new BinaryWriter(ms))
@@ -2481,6 +2644,7 @@ public class stDeleteEnteranceParcelReq : Packet
             writer.Write(this.bcc);
             writer.Write(this.column);
             writer.Write(this.row);
+            writer.Write(trakcingBytes);
             writer.Write(this.height);
 
             return ms.ToArray();
@@ -2489,8 +2653,9 @@ public class stDeleteEnteranceParcelReq : Packet
 
     protected override int CalculateAdditionalLen()
     {
+        int additionalLen = this.trackingNum.Length * sizeof(char);
         // 추가 멤버 변수의 크기를 여기에서 더합니다.
-        int additionalLen = sizeof(Int32) * 3;
+        additionalLen += sizeof(Int32) * 3;
         return additionalLen;
     }
 }
@@ -2500,6 +2665,7 @@ public class stDeleteEnteranceParcelRes : Packet
 {
     public Int32 result;            // 0:성공, 그외 ErrorCode
     public char[] id;               // = tray ID
+    public char[] trackingNum;      // parcel tracking Num
     public Int32 column;            // 14 (Gate Index : 고정)
     public Int32 row;               // 0 고정
     public Int32 height;           // row 점유량
@@ -2509,6 +2675,7 @@ public class stDeleteEnteranceParcelRes : Packet
         this.protocol = (Int32)protocolNum.stDeleteEnteranceParcelRes;
         this.bcc = 1;
         this.id = new char[32];
+        this.trackingNum = new char[32];
     }
 
     public override void Read(byte[] buffer)
@@ -2537,6 +2704,12 @@ public class stDeleteEnteranceParcelRes : Packet
         Buffer.BlockCopy(buffer, offset, this.id, 0, idLength);
         offset += idLength;
 
+        // trackingNum 배열 읽기
+        int trackingNumLength = sizeof(char) * 32;
+        this.trackingNum = new char[trackingNumLength / sizeof(char)];
+        Buffer.BlockCopy(buffer, offset, this.trackingNum, 0, trackingNumLength);
+        offset += trackingNumLength;
+
         // column 필드 읽기
         this.column = BitConverter.ToInt32(buffer, offset);
         offset += sizeof(Int32);
@@ -2554,6 +2727,8 @@ public class stDeleteEnteranceParcelRes : Packet
         // char[]을 바이트 배열로 변환
         byte[] idBytes = new byte[this.id.Length * sizeof(char)];
         Buffer.BlockCopy(this.id, 0, idBytes, 0, idBytes.Length);
+        byte[] trakcingBytes = new byte[this.trackingNum.Length * sizeof(char)];
+        Buffer.BlockCopy(this.trackingNum, 0, trakcingBytes, 0, trakcingBytes.Length);
 
         // 패킷을 구성할 때 임시 MemoryStream 사용
         using (MemoryStream ms = new MemoryStream())
@@ -2566,6 +2741,7 @@ public class stDeleteEnteranceParcelRes : Packet
             writer.Write(this.bcc);
             writer.Write(this.result);
             writer.Write(idBytes);
+            writer.Write(trakcingBytes);
             writer.Write(this.column);
             writer.Write(this.row);
             writer.Write(this.height);
@@ -2576,11 +2752,14 @@ public class stDeleteEnteranceParcelRes : Packet
     protected override int CalculateAdditionalLen()
     {
         // 추가 멤버 변수의 크기를 여기에서 더합니다.
-        int additionalLen = this.id.Length * sizeof(char);
+        int additionalLen = this.id.Length * sizeof(char) + this.trackingNum.Length * sizeof(char);
         additionalLen += sizeof(Int32) * 4; // 다른 Int32 멤버 변수의 크기도 더합니다.
         return additionalLen;
     }
 }
+
+
+// ===========================================================
 
 [Serializable]
 public class stAddGateParcelReq : Packet
@@ -2894,6 +3073,8 @@ public class stDeleteGateParcelRes : Packet
     }
 }
 
+// ===========================================================
+
 [Serializable]
 public class stAllParcelCheckReq : Packet
 {
@@ -2941,10 +3122,12 @@ public class stAllParcelCheckReq : Packet
     }
 }
 
+// Tray의 갯수 만큼 아래 패킷이 전송되어야 합니다.
 [Serializable]
 public class stAllParcelCheckRes : Packet
 {
     public char[] id;               // = tray ID
+    public char[] trackingNum;      // parcel tracking Num
     public Int32 column;            // = tray 열 번호
     public Int32 row;               // tray 행 번호
     public Int32 height;            // 점유량 (기본 1 : 물건이 있을 경우 2 이상의 값)
@@ -2954,6 +3137,7 @@ public class stAllParcelCheckRes : Packet
         this.protocol = (Int32)protocolNum.stAllParcelCheckRes;
         this.bcc = 1;
         this.id = new char[32];
+        this.trackingNum = new char[32];
     }
 
     public override void Read(byte[] buffer)
@@ -2978,6 +3162,12 @@ public class stAllParcelCheckRes : Packet
         Buffer.BlockCopy(buffer, offset, this.id, 0, idLength);
         offset += idLength;
 
+        // trackingNum 배열 읽기
+        int trackingNumLength = sizeof(char) * 32;
+        this.trackingNum = new char[trackingNumLength / sizeof(char)];
+        Buffer.BlockCopy(buffer, offset, this.trackingNum, 0, trackingNumLength);
+        offset += trackingNumLength;
+
         // column 필드 읽기
         this.column = BitConverter.ToInt32(buffer, offset);
         offset += sizeof(Int32);
@@ -2996,6 +3186,8 @@ public class stAllParcelCheckRes : Packet
         // char[]을 바이트 배열로 변환
         byte[] idBytes = new byte[this.id.Length * sizeof(char)];
         Buffer.BlockCopy(this.id, 0, idBytes, 0, idBytes.Length);
+        byte[] trakcingBytes = new byte[this.trackingNum.Length * sizeof(char)];
+        Buffer.BlockCopy(this.trackingNum, 0, trakcingBytes, 0, trakcingBytes.Length);
 
         // 패킷을 구성할 때 임시 MemoryStream 사용
         using (MemoryStream ms = new MemoryStream())
@@ -3007,6 +3199,7 @@ public class stAllParcelCheckRes : Packet
             writer.Write(this.protocol);
             writer.Write(this.bcc);
             writer.Write(idBytes);
+            writer.Write(trakcingBytes);
             writer.Write(this.column);
             writer.Write(this.row);
             writer.Write(this.height);
@@ -3017,7 +3210,7 @@ public class stAllParcelCheckRes : Packet
     protected override int CalculateAdditionalLen()
     {
         // 추가 멤버 변수의 크기를 여기에서 더합니다.
-        int additionalLen = this.id.Length * sizeof(char);
+        int additionalLen = this.id.Length * sizeof(char) + this.trackingNum.Length * sizeof(char);
         additionalLen += sizeof(Int32) * 3; // 다른 Int32 멤버 변수의 크기도 더합니다.
         return additionalLen;
     }

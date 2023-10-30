@@ -174,6 +174,17 @@ public class PlacementManager : MonoBehaviour
         Debug.Log("모두 삭제");        
     }
 
+    public void AddPercelOnEntrance()
+    {
+        // 입구에 트레이가 있을 때만 실행
+    }
+
+    public void DeletePercelOnEntrance()
+    {
+
+    }
+
+
 
     // Update is called once per frame
     void Update()

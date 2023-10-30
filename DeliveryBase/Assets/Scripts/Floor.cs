@@ -55,7 +55,20 @@ public class Floor : MonoBehaviour
             // Debug.Log("Empty");
             isBlocked = false;
         }
-        else isBlocked = true;
+        else
+        {
+            // 순회돌아서 Tray 얻어오기
+            foreach (Collider child in colliders)
+            {
+                if(child.gameObject.GetComponent<Tray>() != null)
+                {
+                    tray = child.gameObject.GetComponent<Tray>();
+                    break;
+                }
+            }
+
+            isBlocked = true;
+        }
         // 계속 호출이 안되게는 못하나...
     }
     

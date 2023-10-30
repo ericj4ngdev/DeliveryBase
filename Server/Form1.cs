@@ -431,13 +431,49 @@ namespace Server
         // Enterance Load Tray
         private void button9_Click(object sender, EventArgs e)
         {
+            // 핸들 입력하지 않으면 작동 X
+            if (comboBox4.Text == "")
+            {
+                WriteRichTextbox("핸들을 입력하세요.");
+                return;
+            }
+            stEnteranceLoadTrayReq pEnteranceLoadTrayReq = new stEnteranceLoadTrayReq();
 
+            pEnteranceLoadTrayReq.handler = Int32.Parse(comboBox4.Text);      // 핸들 종류
+
+            byte[] buffer = pEnteranceLoadTrayReq.Send();    // 버퍼 직렬화
+            stream.Write(buffer, 0, buffer.Length);    // 직렬화된 버퍼를 송신
+
+            WriteRichTextbox("===== Send EnteranceLoadTrayReq =====");
+            WriteRichTextbox($"len :        {pEnteranceLoadTrayReq.len}");
+            WriteRichTextbox($"protocol :   {pEnteranceLoadTrayReq.protocol}");
+            WriteRichTextbox($"bcc :        {pEnteranceLoadTrayReq.bcc}");
+            WriteRichTextbox($"handler :    {pEnteranceLoadTrayReq.handler}");
+            WriteRichTextbox($"column :     {pEnteranceLoadTrayReq.column}");
+            WriteRichTextbox($"row :        {pEnteranceLoadTrayReq.row}");
         }
 
         // Enterance Unload Tray
         private void button10_Click(object sender, EventArgs e)
         {
+            // 핸들 입력하지 않으면 작동 X
+            if (comboBox4.Text == "")
+            {
+                WriteRichTextbox("핸들을 입력하세요.");
+                return;
+            }
+            stEnteranceUnloadTrayReq pEnteranceUnloadTrayReq = new stEnteranceUnloadTrayReq();
 
+            pEnteranceUnloadTrayReq.handler = Int32.Parse(comboBox4.Text);      // 핸들 종류
+
+            byte[] buffer = pEnteranceUnloadTrayReq.Send();    // 버퍼 직렬화
+            stream.Write(buffer, 0, buffer.Length);    // 직렬화된 버퍼를 송신
+
+            WriteRichTextbox("===== Send EnteranceUnloadTrayReq =====");
+            WriteRichTextbox($"len :        {pEnteranceUnloadTrayReq.len}");
+            WriteRichTextbox($"protocol :   {pEnteranceUnloadTrayReq.protocol}");
+            WriteRichTextbox($"bcc :        {pEnteranceUnloadTrayReq.bcc}");
+            WriteRichTextbox($"handler :    {pEnteranceUnloadTrayReq.handler}");
         }        
 
         // All Tray Check
