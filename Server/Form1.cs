@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 using System.Net;
 using System.Net.Sockets;
@@ -248,7 +249,20 @@ namespace Server
                     break;
                 case (Int32)protocolNum.stAllParcelCheckReq:                 
                     break;
-                case (Int32)protocolNum.stAllParcelCheckRes:                 
+                case (Int32)protocolNum.stAllParcelCheckRes:
+                    {
+                        stAllParcelCheckRes pAllParcelCheckRes = new stAllParcelCheckRes();
+                        pAllParcelCheckRes.Read(btfuffer);
+                        WriteRichTextbox("===== Recv AllParcelCheckRes =====");
+                        WriteRichTextbox($"len :        {pAllParcelCheckRes.len}");
+                        WriteRichTextbox($"protocol :   {pAllParcelCheckRes.protocol}");
+                        WriteRichTextbox($"bcc :        {pAllParcelCheckRes.bcc}");
+                        WriteRichTextbox($"id :         {pAllParcelCheckRes.id[0]}");
+                        WriteRichTextbox($"trackingNum :{pAllParcelCheckRes.trackingNum[0]}");
+                        WriteRichTextbox($"column :     {pAllParcelCheckRes.column}");
+                        WriteRichTextbox($"row :        {pAllParcelCheckRes.row}");
+                        WriteRichTextbox($"height :     {pAllParcelCheckRes.height}");
+                    }             
                     break;
                 default:
                     break;
@@ -479,7 +493,50 @@ namespace Server
         // All Tray Check
         private void button14_Click(object sender, EventArgs e)
         {
+            stAllParcelCheckReq pAllParcelCheckReq = new stAllParcelCheckReq();
 
+            byte[] buffer = pAllParcelCheckReq.Send();    // 버퍼 직렬화
+            stream.Write(buffer, 0, buffer.Length);    // 직렬화된 버퍼를 송신
+
+            WriteRichTextbox("===== Send AllParcelCheckReq =====");
+            WriteRichTextbox($"len :        {pAllParcelCheckReq.len}");
+            WriteRichTextbox($"protocol :   {pAllParcelCheckReq.protocol}");
+            WriteRichTextbox($"bcc :        {pAllParcelCheckReq.bcc}");
         }
+
+        // Add Entrance Percel
+        private void button17_Click(object sender, EventArgs e)
+        {
+            stAddEnteranceParcelReq pAddEnteranceParcelReq = new stAddEnteranceParcelReq();
+
+            byte[] buffer = pAddEnteranceParcelReq.Send();    // 버퍼 직렬화
+            stream.Write(buffer, 0, buffer.Length);    // 직렬화된 버퍼를 송신
+
+            WriteRichTextbox("===== Send AddEnteranceParcelReq =====");
+            WriteRichTextbox($"len :        {pAddEnteranceParcelReq.len}");
+            WriteRichTextbox($"protocol :   {pAddEnteranceParcelReq.protocol}");
+            WriteRichTextbox($"bcc :        {pAddEnteranceParcelReq.bcc}");
+            WriteRichTextbox($"column :     {pAddEnteranceParcelReq.column}");
+            WriteRichTextbox($"row :        {pAddEnteranceParcelReq.row}");
+        }
+
+        // Delete Entrance Percel
+        private void button13_Click(object sender, EventArgs e)
+        {
+            stDeleteEnteranceParcelReq pDeleteEnteranceParcelReq = new stDeleteEnteranceParcelReq();
+
+            byte[] buffer = pDeleteEnteranceParcelReq.Send();    // 버퍼 직렬화
+            stream.Write(buffer, 0, buffer.Length);    // 직렬화된 버퍼를 송신
+
+            WriteRichTextbox("===== Send AddEnteranceParcelReq =====");
+            WriteRichTextbox($"len :        {pDeleteEnteranceParcelReq.len}");
+            WriteRichTextbox($"protocol :   {pDeleteEnteranceParcelReq.protocol}");
+            WriteRichTextbox($"bcc :        {pDeleteEnteranceParcelReq.bcc}");
+            WriteRichTextbox($"column :     {pDeleteEnteranceParcelReq.column}");
+            WriteRichTextbox($"row :        {pDeleteEnteranceParcelReq.row}");
+        }
+
+        
+
     }
 }

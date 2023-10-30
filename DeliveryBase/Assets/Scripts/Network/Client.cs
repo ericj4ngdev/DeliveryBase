@@ -6,7 +6,8 @@ using UnityEngine;
 using UnityEngine.UI;
 using System.Net;
 using System.Text;
-
+using System.Collections.Generic;
+using static UnityEditor.Progress;
 
 public class Client : MonoBehaviour
 {
@@ -89,23 +90,6 @@ public class Client : MonoBehaviour
         stream.Write(buffer, 0, buffer.Length);    // 직렬화된 버퍼를 송신
     }
 
-    public void SendAddTrayRes(stAddTrayRes pAddTrayRes)
-    {
-        byte[] buffer = pAddTrayRes.Send();      // 직렬화된 버퍼
-        stream.Write(buffer, 0, buffer.Length);
-    }
-
-    public void SendDeleteTrayRes(stDeleteTrayRes pDeleteTrayRes)
-    {
-        byte[] buffer = pDeleteTrayRes.Send();      // 직렬화된 버퍼
-        stream.Write(buffer, 0, buffer.Length);
-    }
-
-    private void SendDeleteAllTrayRes(stDeleteAllTrayRes stDeleteAllTrayRes)
-    {
-        byte[] buffer = stDeleteAllTrayRes.Send();      // 직렬화된 버퍼
-        stream.Write(buffer, 0, buffer.Length);
-    }
 
     private void SendPacket(Packet packet)
     {
@@ -173,7 +157,7 @@ public class Client : MonoBehaviour
                         {
                             // 에러 출력
                             pAddTrayRes.ret = 1;
-                            SendAddTrayRes(pAddTrayRes);     // 응답해서 보내기
+                            SendPacket(pAddTrayRes);     // 응답해서 보내기
                             Debug.Log($"소켓에러 : {exception.Message}");
                         }
 
@@ -432,10 +416,42 @@ public class Client : MonoBehaviour
                 case (Int32)protocolNum.stGateUnloadTrayCompleteRes:
                     break;
                 case (Int32)protocolNum.stAddEnteranceParcelReq:
+                    {
+                        stAddEnteranceParcelReq pAddEnteranceParcelReq = new stAddEnteranceParcelReq();
+                        stAddEnteranceParcelRes pAddEnteranceParcelRes = new stAddEnteranceParcelRes();
+                        pAddEnteranceParcelReq.Read(buffer);
+
+                        Debug.Log("======= Recv pEnteranceUnloadTrayReq =======");
+                        Debug.Log($"len :       {pAddEnteranceParcelReq.len}");
+                        Debug.Log($"protocol :  {pAddEnteranceParcelReq.protocol}");
+                        Debug.Log($"bcc :       {pAddEnteranceParcelReq.bcc}");
+                        Debug.Log($"column :    {pAddEnteranceParcelReq.column}");
+                        Debug.Log($"row :       {pAddEnteranceParcelReq.row}");
+
+                        placementManager.AddPercelOnEntrance();
+
+                        SendPacket(pAddEnteranceParcelRes);
+                    }
                     break;
                 case (Int32)protocolNum.stAddEnteranceParcelRes:
                     break;
                 case (Int32)protocolNum.stDeleteEnteranceParcelReq:
+                    {
+                        stDeleteEnteranceParcelReq pDeleteEnteranceParcelReq = new stDeleteEnteranceParcelReq();
+                        stDeleteEnteranceParcelRes pDeleteEnteranceParcelRes = new stDeleteEnteranceParcelRes();
+                        pDeleteEnteranceParcelReq.Read(buffer);
+
+                        Debug.Log("======= Recv pEnteranceUnloadTrayReq =======");
+                        Debug.Log($"len :       {pDeleteEnteranceParcelReq.len}");
+                        Debug.Log($"protocol :  {pDeleteEnteranceParcelReq.protocol}");
+                        Debug.Log($"bcc :       {pDeleteEnteranceParcelReq.bcc}");
+                        Debug.Log($"column :    {pDeleteEnteranceParcelReq.column}");
+                        Debug.Log($"row :       {pDeleteEnteranceParcelReq.row}");
+
+                        placementManager.DeletePercelOnEntrance();
+
+                        SendPacket(pDeleteEnteranceParcelRes);
+                    }
                     break;
                 case (Int32)protocolNum.stDeleteEnteranceParcelRes:
                     break;
@@ -448,6 +464,25 @@ public class Client : MonoBehaviour
                 case (Int32)protocolNum.stDeleteGateParcelRes:
                     break;
                 case (Int32)protocolNum.stAllParcelCheckReq:
+                    {
+                        stAllParcelCheckReq pAllParcelCheckReq = new stAllParcelCheckReq();
+                        
+                        pAllParcelCheckReq.Read(buffer);
+
+                        Debug.Log("======= Recv AllParcelCheckReq =======");
+                        Debug.Log($"len :       {pAllParcelCheckReq.len}");
+                        Debug.Log($"protocol :  {pAllParcelCheckReq.protocol}");
+                        Debug.Log($"bcc :       {pAllParcelCheckReq.bcc}");
+
+                        Tray[] trays = FindObjectsOfType<Tray>();
+                        stAllParcelCheckRes[] packets = new stAllParcelCheckRes[trays.Length];
+
+                        for (int i = 0; i < trays.Length; i++)
+                        {
+                            packets[i] = trays[i].GetTrayInfo();
+                            SendPacket(packets[i]);
+                        }                   
+                    }
                     break;
                 case (Int32)protocolNum.stAllParcelCheckRes:
                     break;

@@ -2413,6 +2413,8 @@ public class stAddEnteranceParcelReq : Packet
         this.protocol = (Int32)protocolNum.stAddEnteranceParcelReq;
         this.bcc = 1;
         this.trackingNum = new char[32];
+        this.column = 10;
+        this.row = 9;
     }
 
     public override void Read(byte[] buffer)
@@ -2497,6 +2499,8 @@ public class stAddEnteranceParcelRes : Packet
         this.bcc = 1;
         this.id = new char[32];
         this.trackingNum = new char[32];
+        this.column = 10;
+        this.row = 9;
     }
 
     public override void Read(byte[] buffer)
@@ -2592,6 +2596,8 @@ public class stDeleteEnteranceParcelReq : Packet
         this.protocol = (Int32)protocolNum.stDeleteEnteranceParcelReq;
         this.bcc = 1;
         this.trackingNum = new char[32];
+        this.column = 10;
+        this.row = 9;
     }
 
     public override void Read(byte[] buffer)
@@ -2676,6 +2682,8 @@ public class stDeleteEnteranceParcelRes : Packet
         this.bcc = 1;
         this.id = new char[32];
         this.trackingNum = new char[32];
+        this.column = 10;
+        this.row = 9;
     }
 
     public override void Read(byte[] buffer)

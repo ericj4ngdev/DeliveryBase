@@ -738,7 +738,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &1292067311858957259
 Transform:
   m_ObjectHideFlags: 0
@@ -773,7 +773,7 @@ MonoBehaviour:
   column: 0
   row: 0
   mIsLoaded: 0
-  mPercel: {fileID: 5276360597198246641}
+  mPercel: {fileID: 0}
   spawnSpot: {fileID: 2323710942858296246}
 --- !u!54 &357257318035715176
 Rigidbody:

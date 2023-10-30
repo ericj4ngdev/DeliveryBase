@@ -365,6 +365,7 @@
             this.button17.TabIndex = 31;
             this.button17.Text = "Add Enterance Parcel";
             this.button17.UseVisualStyleBackColor = true;
+            this.button17.Click += new System.EventHandler(this.button17_Click);
             // 
             // button13
             // 
@@ -374,6 +375,7 @@
             this.button13.TabIndex = 32;
             this.button13.Text = "Delete Enterance Parcel";
             this.button13.UseVisualStyleBackColor = true;
+            this.button13.Click += new System.EventHandler(this.button13_Click);
             // 
             // button14
             // 

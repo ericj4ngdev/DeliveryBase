@@ -10,7 +10,7 @@ public class Tray : MonoBehaviour
     public Int32 column;
     public Int32 row;
     public bool mIsLoaded;
-    [SerializeField] private GameObject mPercel;     // 콜리전 감지로 가져옴
+    public Percel mPercel;     // 콜리전 감지로 가져옴
     public Transform spawnSpot;
     // private Percel percel;
 
@@ -23,8 +23,15 @@ public class Tray : MonoBehaviour
     // 서버의 입력을 받고 짐을 활성화/비활성화 여부를 결정한다. 
     public void PercelAcive(bool isActive)
     {
-        mPercel.SetActive(isActive);
+        mPercel.gameObject.SetActive(isActive);
+        mIsLoaded = true;
     }
+
+    private void Update()
+    {
+        mIsLoaded = mPercel.gameObject.activeSelf;
+    }
+
     public void PercelSize(int height)
     {
         // 큐브의 현재 스케일 값을 얻어옵니다.
@@ -35,6 +42,22 @@ public class Tray : MonoBehaviour
         mPercel.transform.localScale = new Vector3(currentScale.x, currentScale.y * height, currentScale.z);
     }
 
+    public stAllParcelCheckRes GetTrayInfo()
+    {
+        stAllParcelCheckRes pAllParcelCheckRes = new stAllParcelCheckRes();
+
+        pAllParcelCheckRes.id = id;
+        pAllParcelCheckRes.column = column;
+        pAllParcelCheckRes.row = row;
+        if (mIsLoaded)
+        {
+            pAllParcelCheckRes.height = 2;
+            pAllParcelCheckRes.trackingNum = mPercel.trackingNum;
+        }
+        else pAllParcelCheckRes.height = 1;
+
+        return pAllParcelCheckRes;
+    }
 
     private void OnCollisionEnter(Collision collision)
     {
@@ -44,7 +67,7 @@ public class Tray : MonoBehaviour
             if (mPercel == null)
             {
                 collision.transform.SetParent(transform);
-                mPercel = collision.gameObject;
+                mPercel = collision.gameObject.GetComponent<Percel>();
                 // percel = mPercel.GetComponent<Percel>();
                 mIsLoaded = true;
             }
@@ -56,6 +79,7 @@ public class Tray : MonoBehaviour
         {
             print("Tray.OnCollisionExit");
             mPercel = null;
+            mIsLoaded = false;
         }
     }
 }

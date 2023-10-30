@@ -5,6 +5,7 @@ using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.Serialization;
 using UnityEngine.UI;
+using static UnityEditor.Progress;
 
 public class PlacementManager : MonoBehaviour
 {
@@ -16,6 +17,11 @@ public class PlacementManager : MonoBehaviour
     [SerializeField] public int rect_num;
     [SerializeField] public int rect_height;            // 랙함 높이
     [SerializeField] public int percel_Size;
+
+    [Header ("Entrance")]
+    public Floor entranceFloor;
+
+
     // Start is called before the first frame update
     void Start()
     {
@@ -35,7 +41,7 @@ public class PlacementManager : MonoBehaviour
         if (racks[rect_num].floors[rect_height].isBlocked == false)
         {
             // 배치 가능
-            racks[rect_num].floors[rect_height].tray.gameObject.SetActive(true);
+            racks[rect_num].floors[rect_height].trayForPlace.gameObject.SetActive(true);
         }
         else
         {
@@ -48,7 +54,7 @@ public class PlacementManager : MonoBehaviour
         switch (percel_Size)
         {
             case 1:
-                racks[rect_num].floors[rect_height].tray.PercelAcive(false);
+                racks[rect_num].floors[rect_height].trayForPlace.PercelAcive(false);
                 break;
             case 2:
                 {
@@ -62,9 +68,9 @@ public class PlacementManager : MonoBehaviour
                             return;
                         }
                     }
-                    racks[rect_num].floors[rect_height].tray.PercelAcive(true);
+                    racks[rect_num].floors[rect_height].trayForPlace.PercelAcive(true);
                     // percelDr.value = percel_Size;
-                    racks[rect_num].floors[rect_height].tray.PercelSize(percel_Size - 1);
+                    racks[rect_num].floors[rect_height].trayForPlace.PercelSize(percel_Size - 1);
                 }
                 break;
             case 3:
@@ -80,9 +86,9 @@ public class PlacementManager : MonoBehaviour
                             return;
                         }
                     }
-                    racks[rect_num].floors[rect_height].tray.PercelAcive(true);
+                    racks[rect_num].floors[rect_height].trayForPlace.PercelAcive(true);
                     // percelDr.value = percel_Size;
-                    racks[rect_num].floors[rect_height].tray.PercelSize(percel_Size - 1);
+                    racks[rect_num].floors[rect_height].trayForPlace.PercelSize(percel_Size - 1);
                 }
                 break;
             default:
@@ -98,7 +104,7 @@ public class PlacementManager : MonoBehaviour
         switch (percelDr.value)
         {
             case 0:
-                racks[rect_num].floors[rect_height].tray.PercelAcive(false);
+                racks[rect_num].floors[rect_height].trayForPlace.PercelAcive(false);
                 break;
             case 1:
                 {
@@ -112,9 +118,9 @@ public class PlacementManager : MonoBehaviour
                             return;
                         }
                     }
-                    racks[rect_num].floors[rect_height].tray.PercelAcive(true);
+                    racks[rect_num].floors[rect_height].trayForPlace.PercelAcive(true);
                     percel_Size = percelDr.value;
-                    racks[rect_num].floors[rect_height].tray.PercelSize(percel_Size);
+                    racks[rect_num].floors[rect_height].trayForPlace.PercelSize(percel_Size);
                 }
                 break;
             case 2:
@@ -130,9 +136,9 @@ public class PlacementManager : MonoBehaviour
                             return; 
                         }
                     }
-                    racks[rect_num].floors[rect_height].tray.PercelAcive(true);
+                    racks[rect_num].floors[rect_height].trayForPlace.PercelAcive(true);
                     percel_Size = percelDr.value;
-                    racks[rect_num].floors[rect_height].tray.PercelSize(percel_Size);
+                    racks[rect_num].floors[rect_height].trayForPlace.PercelSize(percel_Size);
                 }
                 break;
             default:
@@ -150,8 +156,8 @@ public class PlacementManager : MonoBehaviour
         if (racks[rect_num].floors[rect_height].isFull == true)
         {
             // 삭제 가능
-            racks[rect_num].floors[rect_height].tray.gameObject.SetActive(false);            
-            racks[rect_num].floors[rect_height].tray.PercelSize(0);
+            racks[rect_num].floors[rect_height].trayForPlace.gameObject.SetActive(false);            
+            racks[rect_num].floors[rect_height].trayForPlace.PercelSize(0);
         }
         else
         {
@@ -166,9 +172,9 @@ public class PlacementManager : MonoBehaviour
             int max_height = item.floors.Count;     // 각 랙함에 floor수
             for (int i = 0; i < max_height; i++)
             {
-                item.floors[i].tray.gameObject.SetActive(false);
-                item.floors[i].tray.PercelAcive(false);
-                item.floors[rect_height].tray.PercelSize(0);
+                item.floors[i].trayForPlace.gameObject.SetActive(false);
+                item.floors[i].trayForPlace.PercelAcive(false);
+                item.floors[rect_height].trayForPlace.PercelSize(0);
             }
         }
         Debug.Log("모두 삭제");        
@@ -177,13 +183,55 @@ public class PlacementManager : MonoBehaviour
     public void AddPercelOnEntrance()
     {
         // 입구에 트레이가 있을 때만 실행
+        if (entranceFloor.currentTray == null)
+        {
+            Debug.Log("트레이가 없습니다.");
+            return;
+        }
+        if (entranceFloor.currentTray.mIsLoaded)
+        {
+            Debug.Log("짐이 있습니다.");
+            return;
+        }
+        // 트레이가 없는 경우
+        // 트레이에 짐이 없는 경우
+        if (entranceFloor.currentTray != null
+            || entranceFloor.currentTray.mIsLoaded == false)
+        {
+            // 짐 추가
+            entranceFloor.currentTray.mPercel.gameObject.SetActive(true);
+        }
+        
     }
 
     public void DeletePercelOnEntrance()
     {
+        if (entranceFloor.currentTray == null)
+        {
+            Debug.Log("트레이가 없습니다.");
+            return;
+        }
 
+        if (entranceFloor.currentTray != null
+            || entranceFloor.currentTray.mIsLoaded == false)
+        {
+            // 짐 삭제
+            entranceFloor.currentTray.mPercel.gameObject.SetActive(false);
+        }
     }
 
+    public stAllParcelCheckRes[] CheckAllTray()
+    {
+        Tray[] trays = FindObjectsOfType<Tray>();
+        stAllParcelCheckRes[] packets = new stAllParcelCheckRes[trays.Length];
+
+        for (int i = 0; i < trays.Length - 1; i++)
+        {
+            packets[i] = trays[i].GetTrayInfo();
+        }
+
+        return packets;
+    }
 
 
     // Update is called once per frame
