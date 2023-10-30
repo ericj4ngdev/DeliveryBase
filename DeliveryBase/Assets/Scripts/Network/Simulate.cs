@@ -128,7 +128,7 @@ public class Simulate : MonoBehaviour
                 l_Cabinet.PutTray();
                 break;
             case 2:
-                r_Cabinet.mRack_Num = Column - 6;
+                r_Cabinet.mRack_Num = Column;
                 r_Cabinet.PutTray();
                 break;
             default:
@@ -145,7 +145,7 @@ public class Simulate : MonoBehaviour
                 l_Cabinet.GetTray();
                 break;
             case 2:
-                r_Cabinet.mRack_Num = Column - 6;
+                r_Cabinet.mRack_Num = Column;
                 r_Cabinet.GetTray();
                 break;
             default:

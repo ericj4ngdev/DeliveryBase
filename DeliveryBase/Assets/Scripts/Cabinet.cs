@@ -58,7 +58,7 @@ public class Cabinet : MonoBehaviour
         // 0 : pull
         // 1 : push
         // 2 : Hide
-        if (mRack_Num < 5)
+        if (mRack_Num <= 5)
         {
             if (left_Handler.currentIndex != 2)
             {
@@ -105,7 +105,7 @@ public class Cabinet : MonoBehaviour
     
     IEnumerator Co_GetTray()
     {
-        if (mRack_Num < 5)
+        if (mRack_Num <= 5)
         {
             if (left_Handler.currentIndex != 2)
             {
