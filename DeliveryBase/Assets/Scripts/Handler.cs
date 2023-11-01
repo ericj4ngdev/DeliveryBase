@@ -48,7 +48,7 @@ public class Handler : MonoBehaviour
             // StartCoroutine(LoadLeftAllProcess());
         }
         // 자식 콜라이더에서 감지하는 tray를 가져온다. 
-        if (magnet.detectedmTray != null) print("감지");
+        // if (magnet.detectedmTray != null) print("감지");
     }
 
     public IEnumerator Push(float LoadingTime)
@@ -85,17 +85,23 @@ public class Handler : MonoBehaviour
     
     public void DetachTray()
     {
-        // Magnet에서 감지조차 안되면 mTray는 null이므로 바로 함수 끝.
-        if (magnet.detectedmTray == null)
-        {
-            print("감지된 Tray가 없습니다.");
-            return;
-        }
+        // // Magnet에서 감지조차 안되면 mTray는 null이므로 바로 함수 끝.
+        // if (magnet.detectedmTray == null)
+        // {
+        //     print("감지된 Tray가 없습니다.");
+        //     return;
+        // }
         
         if (mTray != null)
         {
+            print("mTray 해제");
             hasControl = false;
-            mTray.transform.SetParent(null);
+            // 자기 자식일때만 부모 해제.
+            // 오른쪽이 이미 가져간 상태면 내비두기
+            if(mTray.transform.parent == transform)
+            {
+                mTray.transform.SetParent(null);
+            }
             mTray = null;
         }
         else print("mTray가 없습니다.");

@@ -372,6 +372,14 @@ public class Client : MonoBehaviour
                 case (Int32)protocolNum.stEnteranceLoadTrayRes:
                     break;
                 case (Int32)protocolNum.stEnteranceLoadTrayCompleteNotify:
+                    {
+                        // 핸들의 상태에 따라 전송하기
+                        // 핸들이 특정상태가 되면 
+
+
+
+
+                    }
                     break;
                 case (Int32)protocolNum.stEnteranceLoadTrayCompleteRes:
                     break;

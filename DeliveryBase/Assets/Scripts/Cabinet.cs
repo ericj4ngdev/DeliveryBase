@@ -16,8 +16,9 @@ public class Cabinet : MonoBehaviour
     public bool isLoaded;
 
     public float loadingTime;
-    private GameObject mTray;
-    private Tray tray;
+    [SerializeField] private GameObject mTray;
+    [SerializeField] private Tray tray;
+    [SerializeField] private Transform middlePoint;
 
     public int mRack_Num;
     // Start is called before the first frame update
@@ -30,6 +31,13 @@ public class Cabinet : MonoBehaviour
     private void Update()
     {
         GetTrayInfo();
+    }
+    
+    void SetTrayLocation()
+    {
+        mTray.transform.position = middlePoint.position;
+        Debug.Log("위치 보정");
+        // mTray.transform.position = middlePoint.position;
     }
 
     public void PutTray()
@@ -60,19 +68,22 @@ public class Cabinet : MonoBehaviour
         // 2 : Hide
         if (mRack_Num <= 5)
         {
-            if (left_Handler.currentIndex != 2)
-            {
-                left_Handler.DetachTray();
-                yield return StartCoroutine(left_Handler.Hide(loadingTime));
-                // yield return new WaitForSeconds(loadingTime * 0.1f);
-            }
             // 숨은 상태라면 보여주기
             if (right_Handler.currentIndex == 2)
             {
                 yield return StartCoroutine(right_Handler.Show(loadingTime));
+                SetTrayLocation();
                 // yield return new WaitForSeconds(loadingTime * 0.1f);
                 right_Handler.AttachTray();         // < 추가
             }
+            if (left_Handler.currentIndex != 2)
+            {
+                left_Handler.DetachTray();
+                yield return StartCoroutine(left_Handler.Hide(loadingTime));
+                SetTrayLocation();
+                // yield return new WaitForSeconds(loadingTime * 0.1f);
+            }
+            
             yield return new WaitForSeconds(loadingTime * 0.1f);
             yield return StartCoroutine(right_Handler.Push(loadingTime));
             right_Handler.DetachTray();
@@ -85,14 +96,17 @@ public class Cabinet : MonoBehaviour
             {
                 yield return StartCoroutine(left_Handler.Show(loadingTime));
                 // yield return new WaitForSeconds(loadingTime * 0.1f);
+                SetTrayLocation();
                 left_Handler.AttachTray();         // < 추가
             }
             if (right_Handler.currentIndex != 2)
             {
                 right_Handler.DetachTray();
                 yield return StartCoroutine(right_Handler.Hide(loadingTime));
+                SetTrayLocation();
                 // yield return new WaitForSeconds(loadingTime * 0.1f);
             }
+                     
             yield return new WaitForSeconds(loadingTime * 0.1f);
             yield return StartCoroutine(left_Handler.Push(loadingTime));
             left_Handler.DetachTray();
@@ -100,13 +114,12 @@ public class Cabinet : MonoBehaviour
         }
         // 이미 숨은 상태이면 숨지 않기
         // 안 숨어있으면 숨기
-        
     }
     
     IEnumerator Co_GetTray()
     {
         if (mRack_Num <= 5)
-        {
+        {            
             if (left_Handler.currentIndex != 2)
             {
                 yield return StartCoroutine(left_Handler.Hide(loadingTime));
@@ -122,6 +135,7 @@ public class Cabinet : MonoBehaviour
             yield return StartCoroutine(right_Handler.Push(loadingTime));
             right_Handler.AttachTray();
             yield return StartCoroutine(right_Handler.Pull(loadingTime));
+            // tray set middle
         }
         else
         {
@@ -142,6 +156,7 @@ public class Cabinet : MonoBehaviour
             left_Handler.AttachTray();
             yield return StartCoroutine(left_Handler.Pull(loadingTime));
         }
+        SetTrayLocation();
     }
     
     
