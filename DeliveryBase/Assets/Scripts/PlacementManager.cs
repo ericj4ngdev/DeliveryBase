@@ -37,9 +37,10 @@ public class PlacementManager : MonoBehaviour
         if (racks[rect_num] == null) return;
         if (racks[rect_num].floors[rect_height] == null) return;
         // if (racks[rect_num].floors[rect_height].currentTray != null) return;
+        if (racks[rect_num].floors[rect_height].isBlocked) return;      // 층이 막혀있는 경우
 
         // if the floor is blocked by percel or tray
-        if (racks[rect_num].floors[rect_height].isBlocked == false)
+        if (racks[rect_num].floors[rect_height].isFull == false)
         {
             // 배치 가능
             racks[rect_num].floors[rect_height].trayForPlace.gameObject.SetActive(true);
@@ -159,8 +160,9 @@ public class PlacementManager : MonoBehaviour
         if (racks[rect_num].floors[rect_height].isFull == true)
         {
             // 삭제 가능
-            racks[rect_num].floors[rect_height].trayForPlace.gameObject.SetActive(false);            
-            racks[rect_num].floors[rect_height].trayForPlace.PercelSize(0);
+            racks[rect_num].floors[rect_height].currentTray.gameObject.SetActive(false);            
+            racks[rect_num].floors[rect_height].currentTray.PercelSize(0);
+            racks[rect_num].floors[rect_height].isFull = false;
         }
         else
         {
@@ -178,6 +180,7 @@ public class PlacementManager : MonoBehaviour
                 item.floors[i].trayForPlace.gameObject.SetActive(false);
                 item.floors[i].trayForPlace.PercelActive(false);
                 item.floors[rect_height].trayForPlace.PercelSize(0);
+                item.floors[rect_height].isFull = false;
             }
         }
         Debug.Log("모두 삭제");        

@@ -39,6 +39,7 @@ public class Tray : MonoBehaviour
         // 큐브의 스케일을 변경하여 높이를 조절합니다.
         mPercel.transform.localPosition = new Vector3(currentPos.x, currentPos.y * height, currentPos.z);
         mPercel.transform.localScale = new Vector3(currentScale.x, currentScale.y * height, currentScale.z);
+        mPercel.m_size = height;
     }
 
     public stAllParcelCheckRes GetTrayInfo()
@@ -48,12 +49,38 @@ public class Tray : MonoBehaviour
         pAllParcelCheckRes.id = id;
         pAllParcelCheckRes.column = column;
         pAllParcelCheckRes.row = row;
-        if (mIsLoaded)
+        pAllParcelCheckRes.height = mPercel.m_size;
+        pAllParcelCheckRes.trackingNum = mPercel.trackingNum;
+        
+        /*if (mIsLoaded)
         {
-            pAllParcelCheckRes.height = 2;
-            pAllParcelCheckRes.trackingNum = mPercel.trackingNum;
+            switch (mPercel.m_size)
+            {
+                case 1:
+                    {
+                        pAllParcelCheckRes.height = 1;
+                        pAllParcelCheckRes.trackingNum = null;
+                    }
+                    break;
+                case 2:
+                    pAllParcelCheckRes.height = 2;
+                    pAllParcelCheckRes.trackingNum = mPercel.trackingNum;
+                    break;
+                case 3:
+                    pAllParcelCheckRes.height = 3;
+                    pAllParcelCheckRes.trackingNum = mPercel.trackingNum;
+                    break;
+                default:
+                    break;
+            }
+            // pAllParcelCheckRes.trackingNum = mPercel.trackingNum;
+
         }
-        else pAllParcelCheckRes.height = 1;
+        else
+        {
+            pAllParcelCheckRes.height = 1;
+            pAllParcelCheckRes.trackingNum = null;
+        }*/
 
         return pAllParcelCheckRes;
     }

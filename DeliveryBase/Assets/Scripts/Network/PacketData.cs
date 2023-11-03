@@ -2710,13 +2710,7 @@ public class stDeleteEnteranceParcelRes : Packet
         int idLength = sizeof(char) * 32;
         this.id = new char[idLength / sizeof(char)];
         Buffer.BlockCopy(buffer, offset, this.id, 0, idLength);
-        offset += idLength;
-
-        // trackingNum 배열 읽기
-        int trackingNumLength = sizeof(char) * 32;
-        this.trackingNum = new char[trackingNumLength / sizeof(char)];
-        Buffer.BlockCopy(buffer, offset, this.trackingNum, 0, trackingNumLength);
-        offset += trackingNumLength;
+        offset += idLength;        
 
         // column 필드 읽기
         this.column = BitConverter.ToInt32(buffer, offset);
@@ -2728,6 +2722,12 @@ public class stDeleteEnteranceParcelRes : Packet
 
         // height 필드 읽기
         this.height = BitConverter.ToInt32(buffer, offset);
+        offset += sizeof(Int32);
+
+        // trackingNum 배열 읽기
+        int trackingNumLength = sizeof(char) * 32;
+        this.trackingNum = new char[trackingNumLength / sizeof(char)];
+        Buffer.BlockCopy(buffer, offset, this.trackingNum, 0, trackingNumLength);        
     }
 
     public override byte[] Send()
