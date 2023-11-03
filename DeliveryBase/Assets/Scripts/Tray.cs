@@ -16,12 +16,11 @@ public class Tray : MonoBehaviour
 
     private void Start()
     {
-        // percel = mPercel.GetComponent<Percel>();
-        // PercelAcive(false);     // 일단 비활성화
+        // PercelActive(false);     // 일단 비활성화, 이게 짐 배치의 버그 원인
     }
 
     // 서버의 입력을 받고 짐을 활성화/비활성화 여부를 결정한다. 
-    public void PercelAcive(bool isActive)
+    public void PercelActive(bool isActive)
     {
         mPercel.gameObject.SetActive(isActive);
         mIsLoaded = true;
@@ -29,7 +28,7 @@ public class Tray : MonoBehaviour
 
     private void Update()
     {
-        mIsLoaded = mPercel.gameObject.activeSelf;
+        // mIsLoaded = mPercel.gameObject.activeSelf;
     }
 
     public void PercelSize(int height)
@@ -78,7 +77,7 @@ public class Tray : MonoBehaviour
         if (collision.collider.CompareTag("Parcel"))
         {
             print("Tray.OnCollisionExit");
-            mPercel = null;
+            mPercel = null;             // 짐이 트레이에서 벗어나면 update에 있는 조건과 충돌. Null오류 발생
             mIsLoaded = false;
         }
     }

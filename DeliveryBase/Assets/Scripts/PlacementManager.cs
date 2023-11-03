@@ -36,6 +36,7 @@ public class PlacementManager : MonoBehaviour
     {
         if (racks[rect_num] == null) return;
         if (racks[rect_num].floors[rect_height] == null) return;
+        // if (racks[rect_num].floors[rect_height].currentTray != null) return;
 
         // if the floor is blocked by percel or tray
         if (racks[rect_num].floors[rect_height].isBlocked == false)
@@ -54,7 +55,8 @@ public class PlacementManager : MonoBehaviour
         switch (percel_Size)
         {
             case 1:
-                racks[rect_num].floors[rect_height].trayForPlace.PercelAcive(false);
+                Debug.Log("짐 크기 0");
+                racks[rect_num].floors[rect_height].trayForPlace.PercelActive(false);
                 break;
             case 2:
                 {
@@ -62,13 +64,14 @@ public class PlacementManager : MonoBehaviour
                     for (int i = 1; i < 6; i++)
                     {
                         // 한 층이라도 block이면 배치할수 없음
-                        if (racks[rect_num].floors[rect_height + i].isFull)
+                        // 그러니까 다 비어있어야 for문을 다돌고 나온다.
+                        if (racks[rect_num].floors[rect_height + i].isBlocked)
                         {
                             Debug.Log("짐을 배치할 수 없습니다.");
                             return;
                         }
                     }
-                    racks[rect_num].floors[rect_height].trayForPlace.PercelAcive(true);
+                    racks[rect_num].floors[rect_height].trayForPlace.PercelActive(true);
                     // percelDr.value = percel_Size;
                     racks[rect_num].floors[rect_height].trayForPlace.PercelSize(percel_Size - 1);
                 }
@@ -80,13 +83,13 @@ public class PlacementManager : MonoBehaviour
                     for (int i = 1; i < 11; i++)
                     {
                         // 한 층이라도 block이면 배치할수 없음
-                        if (racks[rect_num].floors[rect_height + i].isFull)
+                        if (racks[rect_num].floors[rect_height + i].isBlocked)
                         {
                             Debug.Log("짐을 배치할 수 없습니다.");
                             return;
                         }
                     }
-                    racks[rect_num].floors[rect_height].trayForPlace.PercelAcive(true);
+                    racks[rect_num].floors[rect_height].trayForPlace.PercelActive(true);
                     // percelDr.value = percel_Size;
                     racks[rect_num].floors[rect_height].trayForPlace.PercelSize(percel_Size - 1);
                 }
@@ -104,7 +107,7 @@ public class PlacementManager : MonoBehaviour
         switch (percelDr.value)
         {
             case 0:
-                racks[rect_num].floors[rect_height].trayForPlace.PercelAcive(false);
+                racks[rect_num].floors[rect_height].trayForPlace.PercelActive(false);
                 break;
             case 1:
                 {
@@ -118,7 +121,7 @@ public class PlacementManager : MonoBehaviour
                             return;
                         }
                     }
-                    racks[rect_num].floors[rect_height].trayForPlace.PercelAcive(true);
+                    racks[rect_num].floors[rect_height].trayForPlace.PercelActive(true);
                     percel_Size = percelDr.value;
                     racks[rect_num].floors[rect_height].trayForPlace.PercelSize(percel_Size);
                 }
@@ -136,7 +139,7 @@ public class PlacementManager : MonoBehaviour
                             return; 
                         }
                     }
-                    racks[rect_num].floors[rect_height].trayForPlace.PercelAcive(true);
+                    racks[rect_num].floors[rect_height].trayForPlace.PercelActive(true);
                     percel_Size = percelDr.value;
                     racks[rect_num].floors[rect_height].trayForPlace.PercelSize(percel_Size);
                 }
@@ -173,7 +176,7 @@ public class PlacementManager : MonoBehaviour
             for (int i = 0; i < max_height; i++)
             {
                 item.floors[i].trayForPlace.gameObject.SetActive(false);
-                item.floors[i].trayForPlace.PercelAcive(false);
+                item.floors[i].trayForPlace.PercelActive(false);
                 item.floors[rect_height].trayForPlace.PercelSize(0);
             }
         }

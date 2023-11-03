@@ -433,10 +433,17 @@ public class Client : MonoBehaviour
                         Debug.Log($"len :       {pAddEnteranceParcelReq.len}");
                         Debug.Log($"protocol :  {pAddEnteranceParcelReq.protocol}");
                         Debug.Log($"bcc :       {pAddEnteranceParcelReq.bcc}");
+                        Debug.Log($"trackingNum :{new string(pAddEnteranceParcelReq.trackingNum)}");
                         Debug.Log($"column :    {pAddEnteranceParcelReq.column}");
                         Debug.Log($"row :       {pAddEnteranceParcelReq.row}");
+                        Debug.Log($"height :    {pAddEnteranceParcelReq.height}");
+
+                        placementManager.rect_num = pAddEnteranceParcelReq.column;
+                        placementManager.rect_height = pAddEnteranceParcelReq.row;
+                        placementManager.percel_Size = pAddEnteranceParcelReq.height;
 
                         placementManager.AddPercelOnEntrance();
+                        placementManager.SetPercelSizebyServer();
 
                         SendPacket(pAddEnteranceParcelRes);
                     }

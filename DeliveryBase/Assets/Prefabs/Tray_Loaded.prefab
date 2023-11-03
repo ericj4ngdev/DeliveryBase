@@ -773,7 +773,7 @@ MonoBehaviour:
   column: 0
   row: 0
   mIsLoaded: 0
-  mPercel: {fileID: 0}
+  mPercel: {fileID: 9126997000979463508}
   spawnSpot: {fileID: 2323710942858296246}
 --- !u!54 &357257318035715176
 Rigidbody:
@@ -2127,7 +2127,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &5276360597198246654
 Transform:
   m_ObjectHideFlags: 0
@@ -2235,6 +2235,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_size: 0
+  trackingNum: 
 --- !u!1 &5291926768380954215
 GameObject:
   m_ObjectHideFlags: 0

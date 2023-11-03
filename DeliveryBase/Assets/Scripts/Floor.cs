@@ -16,10 +16,12 @@ public class Floor : MonoBehaviour
 
     // tray여부에 따라 달라짐
     public bool isFull;
+
     /*{
         get { return tray != null; }
         private set { isFull = value; }
     }*/
+
     private void Start()
     {
         // 아래 코드는 활성화되었을때만 작동
@@ -61,11 +63,16 @@ public class Floor : MonoBehaviour
             // Debug.Log("비워짐");
             currentTray = null;
             isBlocked = false;
+            return;
         }
+        else
+        {
+            isBlocked = true;       // 뭔가 물체가 있으면 Block되었다고 표시
+        }
+        
 
-        // 채워져 있으면 감지 안함. isBlocked = true일때만 
+        // 해당 층이 채워져 있으면 감지 안함. isBlocked = false일때만 작동
         // 나가면 그때부터 감지 모드. 나가면 isBlocked = false이므로 조건에 추가
-
         if (colliders.Length != 0 && isBlocked == false)
         {
             // 순회돌아서 Tray 얻어오기
