@@ -8,6 +8,7 @@ using System.Net;
 using System.Text;
 using System.Collections.Generic;
 using static UnityEditor.Progress;
+using System.Threading;
 
 public class Client : MonoBehaviour
 {
@@ -509,6 +510,7 @@ public class Client : MonoBehaviour
                         {
                             packets[i] = trays[i].GetTrayInfo();
                             SendPacket(packets[i]);
+                            Thread.Sleep(100);
                         }
                     }
                     break;

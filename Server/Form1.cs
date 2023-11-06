@@ -351,6 +351,7 @@ namespace Server
         // Add Tray Button
         private void button2_Click(object sender, EventArgs e)
         {
+            // Entrance는 11,8
             if (comboBox1.Text == "" || comboBox2.Text == "" || comboBox3.Text == "") 
             {
                 WriteRichTextbox("column 또는 Row 또는 Height 를 선택하시오.");

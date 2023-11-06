@@ -39,7 +39,7 @@ public class Tray : MonoBehaviour
         // 큐브의 스케일을 변경하여 높이를 조절합니다.
         mPercel.transform.localPosition = new Vector3(currentPos.x, currentPos.y * height, currentPos.z);
         mPercel.transform.localScale = new Vector3(currentScale.x, currentScale.y * height, currentScale.z);
-        mPercel.m_size = height;
+        mPercel.m_size = height + 1;
     }
 
     public stAllParcelCheckRes GetTrayInfo()
