@@ -23,7 +23,7 @@ public class Tray : MonoBehaviour
     public void PercelActive(bool isActive)
     {
         mPercel.gameObject.SetActive(isActive);
-        mIsLoaded = true;
+        mIsLoaded = isActive;
     }
 
     private void Update()

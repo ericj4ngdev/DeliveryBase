@@ -37,13 +37,22 @@ public class PlacementManager : MonoBehaviour
         if (racks[rect_num] == null) return;
         if (racks[rect_num].floors[rect_height] == null) return;
         // if (racks[rect_num].floors[rect_height].currentTray != null) return;
-        if (racks[rect_num].floors[rect_height].isBlocked) return;      // 층이 막혀있는 경우
+        if (racks[rect_num].floors[rect_height].isBlocked)
+        {
+            Debug.Log("배치할 수 없습니다");
+            return;      // 층이 막혀있는 경우
+        }
+        // 트레이로 막혀있으면 isFull과 isBlocked 로 체크
+        // 짐으로 막혀있으면 isBlocked 로만 체크
 
+        // isBlocked은 각 층에서 CollisionEnter로 체크
         // if the floor is blocked by percel or tray
-        if (racks[rect_num].floors[rect_height].isFull == false)
+        if (racks[rect_num].floors[rect_height].isBlocked == false)
         {
             // 배치 가능
+            racks[rect_num].floors[rect_height].currentTray = racks[rect_num].floors[rect_height].trayForPlace;
             racks[rect_num].floors[rect_height].trayForPlace.gameObject.SetActive(true);
+            racks[rect_num].floors[rect_height].isFull = true;
         }
         else
         {
@@ -53,11 +62,15 @@ public class PlacementManager : MonoBehaviour
 
     public void SetPercelSizebyServer()
     {
+        // if (racks[rect_num].floors[rect_height].currentTray == null) return;
+        // 초기에 짐 배치 시, currentTray 트레이 감지가 늦어서 currentTray = null로 하여 넘어가버린다.
+        // 소환되자마자 currentTray가 채워지면 밑에가 실행될텐데...
+
         switch (percel_Size)
         {
             case 1:
                 Debug.Log("짐 크기 0");
-                racks[rect_num].floors[rect_height].trayForPlace.PercelActive(false);
+                racks[rect_num].floors[rect_height].currentTray.PercelActive(false);
                 break;
             case 2:
                 {
@@ -66,15 +79,14 @@ public class PlacementManager : MonoBehaviour
                     {
                         // 한 층이라도 block이면 배치할수 없음
                         // 그러니까 다 비어있어야 for문을 다돌고 나온다.
-                        if (racks[rect_num].floors[rect_height + i].isBlocked)
+                        if (racks[rect_num].floors[rect_height + i].isFull)
                         {
                             Debug.Log("짐을 배치할 수 없습니다.");
                             return;
                         }
                     }
-                    racks[rect_num].floors[rect_height].trayForPlace.PercelActive(true);
-                    // percelDr.value = percel_Size;
-                    racks[rect_num].floors[rect_height].trayForPlace.PercelSize(percel_Size - 1);
+                    racks[rect_num].floors[rect_height].currentTray.PercelActive(true);
+                    racks[rect_num].floors[rect_height].currentTray.PercelSize(percel_Size - 1);
                 }
                 break;
             case 3:
@@ -83,16 +95,17 @@ public class PlacementManager : MonoBehaviour
                     // 자기 자신은 제외해야 할듯...
                     for (int i = 1; i < 11; i++)
                     {
-                        // 한 층이라도 block이면 배치할수 없음
-                        if (racks[rect_num].floors[rect_height + i].isBlocked)
+                        // 한 층이라도 isFull이면 배치할수 없음
+                        // isFull인 이유는 짐은 어차피 트레이 위에 있기 때문이다. 
+                        // 자기 자신의 짐은 체크 안하기 위해, 트레이만 체크하기 위해 isFull로 체크
+                        if (racks[rect_num].floors[rect_height + i].isFull)
                         {
                             Debug.Log("짐을 배치할 수 없습니다.");
                             return;
                         }
                     }
-                    racks[rect_num].floors[rect_height].trayForPlace.PercelActive(true);
-                    // percelDr.value = percel_Size;
-                    racks[rect_num].floors[rect_height].trayForPlace.PercelSize(percel_Size - 1);
+                    racks[rect_num].floors[rect_height].currentTray.PercelActive(true);
+                    racks[rect_num].floors[rect_height].currentTray.PercelSize(percel_Size - 1);
                 }
                 break;
             default:
@@ -160,7 +173,8 @@ public class PlacementManager : MonoBehaviour
         if (racks[rect_num].floors[rect_height].isFull == true)
         {
             // 삭제 가능
-            racks[rect_num].floors[rect_height].currentTray.gameObject.SetActive(false);            
+            racks[rect_num].floors[rect_height].currentTray.gameObject.SetActive(false);
+            racks[rect_num].floors[rect_height].currentTray.PercelActive(false);
             racks[rect_num].floors[rect_height].currentTray.PercelSize(0);
             racks[rect_num].floors[rect_height].isFull = false;
         }
@@ -177,10 +191,11 @@ public class PlacementManager : MonoBehaviour
             int max_height = item.floors.Count;     // 각 랙함에 floor수
             for (int i = 0; i < max_height; i++)
             {
-                item.floors[i].trayForPlace.gameObject.SetActive(false);
-                item.floors[i].trayForPlace.PercelActive(false);
-                item.floors[rect_height].trayForPlace.PercelSize(0);
-                item.floors[rect_height].isFull = false;
+                if (item.floors[i].currentTray == null) continue;
+                item.floors[i].currentTray.gameObject.SetActive(false);
+                item.floors[i].currentTray.PercelActive(false);
+                item.floors[i].currentTray.PercelSize(0);
+                item.floors[i].isFull = false;
             }
         }
         Debug.Log("모두 삭제");        

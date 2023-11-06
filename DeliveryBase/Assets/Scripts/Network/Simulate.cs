@@ -74,9 +74,14 @@ public class Simulate : MonoBehaviour
         {
             if (Handler == 1)
             {
-                if (Column >= 6)
+                if (Column == 5 || Column == 6 || Column == 9 || Column == 10 || Column == 12 || Column == 13)
                 {
-                    robotController.MoveToRackNum(Column - 6);
+                    Debug.Log("이동 불가");
+                    return;
+                }
+                if (Column > 6)
+                {
+                    robotController.MoveToRackNum(Column - 7);
                 }
                 else
                 {
@@ -86,14 +91,15 @@ public class Simulate : MonoBehaviour
 
             if (Handler == 2)
             {
-                if (Column == 0 && Column == 1 && Column == 8) 
+                if (Column == 0 || Column == 1 || Column == 6 || Column == 7 || Column == 8 || Column == 9 ||
+                    Column == 10) 
                 {
                     Debug.Log("이동 불가");                    
                     return; 
                 }
-                if (Column >= 8)
+                if (Column > 10)
                 {
-                    robotController.MoveToRackNum(Column - 8);
+                    robotController.MoveToRackNum(Column - 9);
                 }
                 else
                 {

@@ -179,9 +179,6 @@ namespace Server
                 case (Int32)protocolNum.stLoadTrayCompleteNotify:       
                     break;
                 case (Int32)protocolNum.stLoadTrayCompleteRes:
-                    {
-
-                    }          
                     break;
                 case (Int32)protocolNum.stUnloadTrayReq:                
                     break;
@@ -201,7 +198,15 @@ namespace Server
                     break;
                 case (Int32)protocolNum.stEnteranceLoadTrayReq:         
                     break;
-                case (Int32)protocolNum.stEnteranceLoadTrayRes:         
+                case (Int32)protocolNum.stEnteranceLoadTrayRes:
+                    {
+                        stEnteranceLoadTrayRes pEnteranceLoadTrayRes = new stEnteranceLoadTrayRes();
+                        pEnteranceLoadTrayRes.Read(btfuffer);
+                        WriteRichTextbox("===== Recv EnteranceLoadTrayRes =====");
+                        WriteRichTextbox($"len : {pEnteranceLoadTrayRes.len}");
+                        WriteRichTextbox($"protocol : {pEnteranceLoadTrayRes.protocol}");
+                        WriteRichTextbox($"bcc : {pEnteranceLoadTrayRes.bcc}");
+                    }
                     break;
                 case (Int32)protocolNum.stEnteranceLoadTrayCompleteNotify:   
                     break;
@@ -209,7 +214,15 @@ namespace Server
                     break;
                 case (Int32)protocolNum.stEnteranceUnloadTrayReq:            
                     break;
-                case (Int32)protocolNum.stEnteranceUnloadTrayRes:            
+                case (Int32)protocolNum.stEnteranceUnloadTrayRes:
+                    {
+                        stEnteranceUnloadTrayRes pEnteranceUnloadTrayRes = new stEnteranceUnloadTrayRes();
+                        pEnteranceUnloadTrayRes.Read(btfuffer);
+                        WriteRichTextbox("===== Recv EnteranceUnloadTrayRes =====");
+                        WriteRichTextbox($"len : {pEnteranceUnloadTrayRes.len}");
+                        WriteRichTextbox($"protocol : {pEnteranceUnloadTrayRes.protocol}");
+                        WriteRichTextbox($"bcc : {pEnteranceUnloadTrayRes.bcc}");
+                    }
                     break;
                 case (Int32)protocolNum.stEnteranceUnloadTrayCompleteNotify: 
                     break;
@@ -233,15 +246,43 @@ namespace Server
                     break;
                 case (Int32)protocolNum.stAddEnteranceParcelReq:             
                     break;
-                case (Int32)protocolNum.stAddEnteranceParcelRes:             
+                case (Int32)protocolNum.stAddEnteranceParcelRes:
+                    {
+                        stAddEnteranceParcelRes pAddEnteranceParcelRes = new stAddEnteranceParcelRes();
+                        pAddEnteranceParcelRes.Read(btfuffer);
+                        WriteRichTextbox("===== Recv AddEnteranceParcelRes =====");
+                        WriteRichTextbox($"len :        {pAddEnteranceParcelRes.len}");
+                        WriteRichTextbox($"protocol :   {pAddEnteranceParcelRes.protocol}");
+                        WriteRichTextbox($"id :         {pAddEnteranceParcelRes.id}");
+                        WriteRichTextbox($"result :     {pAddEnteranceParcelRes.result}");
+                        WriteRichTextbox($"trackingNum :{pAddEnteranceParcelRes.trackingNum}");
+                        WriteRichTextbox($"column :     {pAddEnteranceParcelRes.column}");
+                        WriteRichTextbox($"row :        {pAddEnteranceParcelRes.row}");
+                        WriteRichTextbox($"height :     {pAddEnteranceParcelRes.height}");
+                        WriteRichTextbox($"bcc :        {pAddEnteranceParcelRes.bcc}");
+                    }
                     break;
                 case (Int32)protocolNum.stDeleteEnteranceParcelReq:          
                     break;
-                case (Int32)protocolNum.stDeleteEnteranceParcelRes:          
+                case (Int32)protocolNum.stDeleteEnteranceParcelRes:
+                    {
+                        stDeleteEnteranceParcelRes pDeleteEnteranceParcelRes = new stDeleteEnteranceParcelRes();
+                        pDeleteEnteranceParcelRes.Read(btfuffer);
+                        WriteRichTextbox("===== Recv DeleteEnteranceParcelRes =====");
+                        WriteRichTextbox($"len :        {pDeleteEnteranceParcelRes.len}");
+                        WriteRichTextbox($"protocol :   {pDeleteEnteranceParcelRes.protocol}");
+                        WriteRichTextbox($"id :         {pDeleteEnteranceParcelRes.id}");
+                        WriteRichTextbox($"result :     {pDeleteEnteranceParcelRes.result}");
+                        WriteRichTextbox($"trackingNum :{pDeleteEnteranceParcelRes.trackingNum}");
+                        WriteRichTextbox($"column :     {pDeleteEnteranceParcelRes.column}");
+                        WriteRichTextbox($"row :        {pDeleteEnteranceParcelRes.row}");
+                        WriteRichTextbox($"height :     {pDeleteEnteranceParcelRes.height}");
+                        WriteRichTextbox($"bcc :        {pDeleteEnteranceParcelRes.bcc}");
+                    }
                     break;
-                case (Int32)protocolNum.stAddGateParcelReq:                  
+                case (Int32)protocolNum.stAddGateParcelReq:
                     break;
-                case (Int32)protocolNum.stAddGateParcelRes:                  
+                case (Int32)protocolNum.stAddGateParcelRes:
                     break;
                 case (Int32)protocolNum.stDeleteGateParcelReq:               
                     break;
@@ -528,7 +569,7 @@ namespace Server
             byte[] buffer = pDeleteEnteranceParcelReq.Send();    // 버퍼 직렬화
             stream.Write(buffer, 0, buffer.Length);    // 직렬화된 버퍼를 송신
 
-            WriteRichTextbox("===== Send AddEnteranceParcelReq =====");
+            WriteRichTextbox("===== Send DeleteEnteranceParcelReq =====");
             WriteRichTextbox($"len :        {pDeleteEnteranceParcelReq.len}");
             WriteRichTextbox($"protocol :   {pDeleteEnteranceParcelReq.protocol}");
             WriteRichTextbox($"bcc :        {pDeleteEnteranceParcelReq.bcc}");

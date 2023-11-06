@@ -97,6 +97,12 @@ public class Client : MonoBehaviour
         stream.Write(buffer, 0, buffer.Length);         // 직렬화된 버퍼를 송신
     }
 
+    private void SendPacket(stDeleteEnteranceParcelRes packet)
+    {
+        byte[] buffer = packet.Send();                  // 버퍼 직렬화
+        stream.Write(buffer, 0, buffer.Length);         // 직렬화된 버퍼를 송신
+    }
+
     // ================================== 수신 (버퍼 -> 구조체 ) ===============================
     void RecvServerStruct()
     {
@@ -147,7 +153,7 @@ public class Client : MonoBehaviour
                             placementManager.rect_num = pAddTrayReq.column;
                             placementManager.rect_height = pAddTrayReq.row;
                             placementManager.percel_Size = pAddTrayReq.height;
-                            
+                                                        
                             placementManager.AddTray();
                             placementManager.SetPercelSizebyServer();
 
@@ -429,14 +435,14 @@ public class Client : MonoBehaviour
                         stAddEnteranceParcelRes pAddEnteranceParcelRes = new stAddEnteranceParcelRes();
                         pAddEnteranceParcelReq.Read(buffer);
 
-                        Debug.Log("======= Recv pEnteranceUnloadTrayReq =======");
+                        Debug.Log("======= Recv pAddEnteranceParcelReq =======");
                         Debug.Log($"len :       {pAddEnteranceParcelReq.len}");
                         Debug.Log($"protocol :  {pAddEnteranceParcelReq.protocol}");
-                        Debug.Log($"bcc :       {pAddEnteranceParcelReq.bcc}");
-                        Debug.Log($"trackingNum :{new string(pAddEnteranceParcelReq.trackingNum)}");
                         Debug.Log($"column :    {pAddEnteranceParcelReq.column}");
                         Debug.Log($"row :       {pAddEnteranceParcelReq.row}");
                         Debug.Log($"height :    {pAddEnteranceParcelReq.height}");
+                        Debug.Log($"trackingNum :{new string(pAddEnteranceParcelReq.trackingNum)}");
+                        Debug.Log($"bcc :       {pAddEnteranceParcelReq.bcc}");
 
                         placementManager.rect_num = pAddEnteranceParcelReq.column;
                         placementManager.rect_height = pAddEnteranceParcelReq.row;
@@ -456,12 +462,19 @@ public class Client : MonoBehaviour
                         stDeleteEnteranceParcelRes pDeleteEnteranceParcelRes = new stDeleteEnteranceParcelRes();
                         pDeleteEnteranceParcelReq.Read(buffer);
 
-                        Debug.Log("======= Recv pEnteranceUnloadTrayReq =======");
-                        Debug.Log($"len :       {pDeleteEnteranceParcelReq.len}");
-                        Debug.Log($"protocol :  {pDeleteEnteranceParcelReq.protocol}");
-                        Debug.Log($"bcc :       {pDeleteEnteranceParcelReq.bcc}");
-                        Debug.Log($"column :    {pDeleteEnteranceParcelReq.column}");
-                        Debug.Log($"row :       {pDeleteEnteranceParcelReq.row}");
+                        Debug.Log("======= Recv pDeleteEnteranceParcelReq =======");
+                        Debug.Log($"len :         {pDeleteEnteranceParcelReq.len}");
+                        Debug.Log($"protocol :    {pDeleteEnteranceParcelReq.protocol}");
+                        Debug.Log($"column :      {pDeleteEnteranceParcelReq.column}");
+                        Debug.Log($"row :         {pDeleteEnteranceParcelReq.row}");
+                        Debug.Log($"trackingNum : {pDeleteEnteranceParcelReq.trackingNum}");
+                        Debug.Log($"height :      {pDeleteEnteranceParcelReq.height}");
+                        Debug.Log($"bcc :         {pDeleteEnteranceParcelReq.bcc}");
+
+                        pDeleteEnteranceParcelRes.column = pDeleteEnteranceParcelReq.column;
+                        pDeleteEnteranceParcelRes.row = pDeleteEnteranceParcelReq.row;
+                        pDeleteEnteranceParcelRes.trackingNum = pDeleteEnteranceParcelReq.trackingNum;
+                        pDeleteEnteranceParcelRes.height = pDeleteEnteranceParcelReq.height;
 
                         placementManager.DeletePercelOnEntrance();
 
@@ -496,7 +509,7 @@ public class Client : MonoBehaviour
                         {
                             packets[i] = trays[i].GetTrayInfo();
                             SendPacket(packets[i]);
-                        }                   
+                        }
                     }
                     break;
                 case (Int32)protocolNum.stAllParcelCheckRes:

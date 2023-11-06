@@ -2692,25 +2692,31 @@ public class stDeleteEnteranceParcelRes : Packet
 
         // 길이 필드 읽기
         this.len = BitConverter.ToInt32(buffer, offset);
-        offset += sizeof(Int32);
+        offset += sizeof(Int32);                // 4
 
         // 프로토콜 필드 읽기
         this.protocol = BitConverter.ToInt32(buffer, offset);
-        offset += sizeof(Int32);
+        offset += sizeof(Int32);        // 8
 
         // BCC 필드 읽기
         this.bcc = buffer[offset];
-        offset += sizeof(byte);
+        offset += sizeof(byte);     // 9
 
         // result 필드 읽기
         this.result = BitConverter.ToInt32(buffer, offset);
-        offset += sizeof(Int32);
+        offset += sizeof(Int32);        // 13
 
         // id 배열 읽기
         int idLength = sizeof(char) * 32;
         this.id = new char[idLength / sizeof(char)];
         Buffer.BlockCopy(buffer, offset, this.id, 0, idLength);
-        offset += idLength;        
+        offset += idLength;             // 77
+
+        // trackingNum 배열 읽기
+        int trackingNumLength = sizeof(char) * 32;
+        this.trackingNum = new char[trackingNumLength / sizeof(char)];
+        Buffer.BlockCopy(buffer, offset, this.trackingNum, 0, trackingNumLength);
+        offset += trackingNumLength;
 
         // column 필드 읽기
         this.column = BitConverter.ToInt32(buffer, offset);
@@ -2721,13 +2727,7 @@ public class stDeleteEnteranceParcelRes : Packet
         offset += sizeof(Int32);
 
         // height 필드 읽기
-        this.height = BitConverter.ToInt32(buffer, offset);
-        offset += sizeof(Int32);
-
-        // trackingNum 배열 읽기
-        int trackingNumLength = sizeof(char) * 32;
-        this.trackingNum = new char[trackingNumLength / sizeof(char)];
-        Buffer.BlockCopy(buffer, offset, this.trackingNum, 0, trackingNumLength);        
+        this.height = BitConverter.ToInt32(buffer, offset);              
     }
 
     public override byte[] Send()
@@ -3164,18 +3164,6 @@ public class stAllParcelCheckRes : Packet
         this.bcc = buffer[offset];
         offset += sizeof(byte);
 
-        // id 배열 읽기
-        int idLength = sizeof(char) * 32; //this.len - (sizeof(Int32) * 3);
-        this.id = new char[idLength / sizeof(char)];
-        Buffer.BlockCopy(buffer, offset, this.id, 0, idLength);
-        offset += idLength;
-
-        // trackingNum 배열 읽기
-        int trackingNumLength = sizeof(char) * 32;
-        this.trackingNum = new char[trackingNumLength / sizeof(char)];
-        Buffer.BlockCopy(buffer, offset, this.trackingNum, 0, trackingNumLength);
-        offset += trackingNumLength;
-
         // column 필드 읽기
         this.column = BitConverter.ToInt32(buffer, offset);
         offset += sizeof(Int32);
@@ -3186,6 +3174,19 @@ public class stAllParcelCheckRes : Packet
 
         // height 필드 읽기
         this.height = BitConverter.ToInt32(buffer, offset);
+        offset += sizeof(Int32);
+
+        // id 배열 읽기
+        int idLength = sizeof(char) * 32; //this.len - (sizeof(Int32) * 3);
+        this.id = new char[idLength / sizeof(char)];
+        Buffer.BlockCopy(buffer, offset, this.id, 0, idLength);
+        offset += idLength;
+
+        // trackingNum 배열 읽기
+        int trackingNumLength = sizeof(char) * 32;
+        this.trackingNum = new char[trackingNumLength / sizeof(char)];
+        Buffer.BlockCopy(buffer, offset, this.trackingNum, 0, trackingNumLength);
+        // offset += trackingNumLength;
     }
 
 

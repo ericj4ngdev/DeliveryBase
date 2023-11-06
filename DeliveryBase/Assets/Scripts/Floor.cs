@@ -48,8 +48,7 @@ public class Floor : MonoBehaviour
     void CheckTray()
     {
         if (currentTray == null) return;
-        if (currentTray.mIsLoaded) isFull = true;
-        else isFull = false;        
+        // if (currentTray.mIsLoaded) isFull = true;        else isFull = false;        
     }   
 
     // Tray가 있으면 호출
@@ -109,7 +108,11 @@ public class Floor : MonoBehaviour
     }
 
     // tray 넣고 뺄 때 층을 부모로 설정
-    private void GetCurrentTray() => currentTray.transform.SetParent(transform);
+    private void GetCurrentTray()
+    {
+        if (currentTray == null) return;
+        currentTray.transform.SetParent(transform);
+    } 
 
 
     private void OnDrawGizmos()

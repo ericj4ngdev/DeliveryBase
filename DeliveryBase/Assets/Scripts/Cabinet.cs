@@ -35,6 +35,7 @@ public class Cabinet : MonoBehaviour
     
     void SetTrayLocation()
     {
+        if (mTray == null) return;
         mTray.transform.position = middlePoint.position;
         Debug.Log("위치 보정");
         // mTray.transform.position = middlePoint.position;
